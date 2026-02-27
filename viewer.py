@@ -81,7 +81,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
         query = dict(urllib.parse.parse_qsl(parsed.query))
 
         if path == "/" or path == "/index.html":
-            html_path = ROOT / "viewer.html"
+            html_path = ROOT / "index.html"
             body = html_path.read_bytes()
             self._send(200, "text/html; charset=utf-8", body)
         elif path == "/api/data":
