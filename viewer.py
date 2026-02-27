@@ -12,10 +12,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-OUTPUTS = ROOT / "crosspaper-QA-viewer"
-FACTS_DIR = OUTPUTS / "facts" / "image_caption"
-QA_DIR = OUTPUTS / "image_caption"
-# EVAL_DIR = OUTPUTS / "eval" / "image_caption"
+FACTS_DIR = ROOT / "facts" / "image_caption"
+QA_DIR = ROOT / "image_caption"
 
 
 def _load_json(path: Path):
@@ -71,7 +69,7 @@ def _get_all_data() -> dict:
         "filtered_ids": list(filtered_ids),
         "filter_log": filter_log_map,
         "questions": questions,
-        # "eval": eval_data,
+        "eval": {},
         "papers": papers,
     }
 
@@ -123,7 +121,8 @@ def main():
     HTTPServer.allow_reuse_address = True
     srv = HTTPServer((args.host, args.port), ViewerHandler)
     print(f"\n  Pipeline Viewer running at http://localhost:{args.port}")
-    print(f"  Loading data from: {OUTPUTS}\n")
+    print(f"  Facts dir:     {FACTS_DIR}")
+    print(f"  Questions dir: {QA_DIR}\n")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
