@@ -1,0 +1,142 @@
+[
+  {
+    "question_id": "47bb0e0746c65108",
+    "overarching_question": "AUTOHALLUSION (Group B) includes two metrics to detect hallucinations after applying manipulation strategies. Group A uses FAITH-SCORE and reports that LLaVA-1k yields higher FAITH-SCORE than COCO-Cap across models. If you were to swap AUTOHALLUSION\u2019s hallucination-detection metric(s) for FAITH-SCORE, what cross-paper comparison would you predict about sensitivity to dataset choice (LLaVA-1k vs COCO-Cap), and why?",
+    "gold_answer": "Using FAITH-SCORE as the hallucination-detection metric would likely reveal a dataset sensitivity where LLaVA-1k produces higher scores than COCO-Cap, because Group A explicitly reports that FAITH-SCORE is consistently higher on LLaVA-1k than on COCO-Cap across evaluated models. Group B contributes that AUTOHALLUSION\u2019s pipeline ends with two hallucination-detection metrics; swapping those for FAITH-SCORE would import Group A\u2019s observed dataset-dependent behavior into AUTOHALLUSION\u2019s evaluation, making dataset choice (LLaVA-1k vs COCO-Cap) a key factor in measured hallucination.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_90d4c1af9572",
+          "F_92fc5f8f0f29",
+          "F_2b5755255afc"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_90d4c1af9572",
+            "source_id": "U_91ebac9090b2",
+            "paper_id": "d2cdaabd9749",
+            "statement": "For the rightmost model, the F AITH - S CORE values for COCO-Cap and LLaVA-1k are nearly identical and are the lowest among all models.",
+            "modality": "figure",
+            "difficulty": "easy",
+            "reasoning": "This is a straightforward comparison of bar heights, identifying both similarity and minimum values.",
+            "source_mode": "parsed",
+            "source_section": "Table_p7",
+            "source_text": "The rightmost pair of bars are both short and nearly equal in height.",
+            "image_path": "outputs/parsed/d2cdaabd9749/tables/tab_001_p7.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "For the rightmost model, the F AITH - S CORE values for COCO-Cap and LLaVA-1k are nearly identical and are the lowest among all models."
+          },
+          {
+            "fact_id": "F_92fc5f8f0f29",
+            "source_id": "U_91ebac9090b2",
+            "paper_id": "d2cdaabd9749",
+            "statement": "On the F AITH - S CORE metric, the LLaVA-1k dataset consistently yields higher scores than the COCO-Cap dataset across all evaluated models.",
+            "modality": "figure",
+            "difficulty": "medium",
+            "reasoning": "This fact synthesizes the visible trend in the bar chart, where the LLaVA-1k bars are always higher than the corresponding COCO-Cap bars for each model, indicating a consistent dataset effect.",
+            "source_mode": "parsed",
+            "source_section": "Table_p7",
+            "source_text": "Table 4 presents a comprehensive performance comparison of various models in terms of F AITH - S CORE when benchmarked on the LLaVA-1k and MSCOCO-Cap datasets.",
+            "image_path": "outputs/parsed/d2cdaabd9749/tables/tab_001_p7.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "On the F AITH - S CORE metric, the LLaVA-1k dataset consistently yields higher scores than the COCO-Cap dataset across all evaluated models."
+          },
+          {
+            "fact_id": "F_2b5755255afc",
+            "source_id": "U_5385ab300323",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The paper 'mplug-owl: Modularization empowers large language models with multimodality' (Ye et al., 2023) introduces a modular approach that enables large language models to handle multimodal inputs.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact is meaningful because it highlights a novel methodological contribution\u2014modularization for multimodality in large language models\u2014which is central to understanding advances in multimodal AI.",
+            "source_mode": "parsed",
+            "source_section": "page_11",
+            "source_text": "Qinghao Ye, Haiyang Xu, Guohai Xu, Jiabo Ye, Ming Yan,   Yiyang   Zhou,   Junyang   Wang,   Anwen   Hu, Pengcheng Shi, Yaya Shi, Chenliang Li, Yuanhong Xu, Hehong Chen, Junfeng Tian, Qian Qi, Ji Zhang, and Fei Huang. 2023.   mplug-owl:   Modularization empowers large language models with multimodality. CoRR , abs/2304.14178.",
+            "image_path": null,
+            "metadata": {},
+            "content": "The paper 'mplug-owl: Modularization empowers large language models with multimodality' (Ye et al., 2023) introduces a modular approach that enables large language models to handle multimodal inputs."
+          }
+        ],
+        "sub_question": "What does Group A conclude about FAITH-SCORE on LLaVA-1k vs COCO-Cap?",
+        "sub_answer": "FAITH-SCORE is consistently higher on LLaVA-1k than on COCO-Cap across all evaluated models."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_04aeaafc9f07",
+          "F_4d4e782b1b0f",
+          "F_2061e04a1b72"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_04aeaafc9f07",
+            "source_id": "U_ea544e00ad28",
+            "paper_id": "8922e6cfed54",
+            "statement": "The A UTO H ALLUSION framework consists of four main stages: automatic generation of scenes and objects sets, probing the language prior of the victim LVLM using text, applying three manipulation strategies to induce hallucination in scene images, and finally using two metrics to detect hallucinations.",
+            "modality": "figure",
+            "difficulty": "easy",
+            "reasoning": "This fact summarizes the overall pipeline as depicted in the figure and described in the caption, making it a direct and standalone description of the method.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p4",
+            "source_text": "We first automatically generate the scenes set and objects set (pink). After that, we use text to probe the language prior of the victim LVLM and then propose three manipulation strategies to induce hallucination in scene images(yellow). We finally use two metrics to detect hallucinations (blue).",
+            "image_path": "outputs/parsed/8922e6cfed54/figures/fig_006_p4.jpeg",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The A UTO H ALLUSION framework consists of four main stages: automatic generation of scenes and objects sets, probing the language prior of the victim LVLM using text, applying three manipulation strategies to induce hallucination in scene images, and finally using two metrics to detect hallucinations."
+          },
+          {
+            "fact_id": "F_4d4e782b1b0f",
+            "source_id": "U_3679617b7858",
+            "paper_id": "8922e6cfed54",
+            "statement": "Existence questions can be constructed with or without image-level captions as contextual information.",
+            "modality": "text",
+            "difficulty": "easy",
+            "reasoning": "The table lists both 'N/A' and 'Image-level Caption' under Contextual Info. for Existence, showing both options are used.",
+            "source_mode": "parsed",
+            "source_section": "Table_p15",
+            "source_text": "Existence | N/A, Image-level Caption",
+            "image_path": "outputs/parsed/8922e6cfed54/tables/tab_003_p15.png",
+            "metadata": {},
+            "content": "Existence questions can be constructed with or without image-level captions as contextual information."
+          },
+          {
+            "fact_id": "F_2061e04a1b72",
+            "source_id": "U_e1aeffd0daa7",
+            "paper_id": "8922e6cfed54",
+            "statement": "In Figure 13, two forks are placed on a napkin next to the cake, indicating the presence of multiple people, which may contribute to the evaluation model's failure in recognizing social or contextual cues.",
+            "modality": "figure",
+            "difficulty": "medium",
+            "reasoning": "The presence of two forks implies a social context that may be challenging for evaluation models to interpret, especially in distinguishing between objects and understanding intent.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p25",
+            "source_text": "Figure 13: Failure Case: When Evaluation Model Fails.",
+            "image_path": "outputs/parsed/8922e6cfed54/figures/fig_034_p25.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "In Figure 13, two forks are placed on a napkin next to the cake, indicating the presence of multiple people, which may contribute to the evaluation model's failure in recognizing social or contextual cues."
+          }
+        ],
+        "sub_question": "Where in AUTOHALLUSION (Group B) would FAITH-SCORE conceptually replace existing components, and what are those components?",
+        "sub_answer": "At the final stage: AUTOHALLUSION uses two metrics to detect hallucinations after manipulations; FAITH-SCORE would replace (or be added alongside) those hallucination-detection metrics."
+      }
+    ],
+    "paper_ids": [
+      "8922e6cfed54",
+      "d2cdaabd9749"
+    ],
+    "modalities": [
+      "text",
+      "figure"
+    ],
+    "difficulty": "hard",
+    "reasoning_type": "comparison",
+    "generation_mode": "contrastive"
+  }
+]

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Cross-Paper Bench Viewer</title>
+<style>
+:root {
+  --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a; --border: #2d3250;
+  --text: #e4e4e7; --text-dim: #9ca3af; --accent: #6366f1; --accent-light: #818cf8;
+  --green: #22c55e; --red: #ef4444; --yellow: #eab308; --orange: #f97316;
+  --cyan: #06b6d4; --pink: #ec4899;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+       background:var(--bg); color:var(--text); line-height:1.5; }
+
+.app { display:flex; height:100vh; }
+.sidebar { width:230px; background:var(--surface); border-right:1px solid var(--border);
+           padding:16px 0; flex-shrink:0; overflow-y:auto; }
+.sidebar h1 { font-size:13px; padding:0 16px 12px; color:var(--accent-light);
+              letter-spacing:0.5px; text-transform:uppercase; }
+.sidebar .nav-section { font-size:10px; text-transform:uppercase; letter-spacing:1px;
+                        color:var(--text-dim); padding:16px 16px 4px; }
+.sidebar .nav-item { padding:8px 16px; cursor:pointer; font-size:13px;
+                     transition:background 0.15s; display:flex; align-items:center; gap:8px; }
+.sidebar .nav-item:hover { background:var(--surface2); }
+.sidebar .nav-item.active { background:var(--accent); color:#fff; }
+.sidebar .nav-item .badge { background:var(--surface2); color:var(--text-dim);
+                            font-size:11px; padding:1px 6px; border-radius:8px; margin-left:auto; }
+.sidebar .nav-item.active .badge { background:rgba(255,255,255,0.2); color:#fff; }
+
+.main { flex:1; overflow-y:auto; padding:24px; }
+.main h2 { font-size:20px; margin-bottom:16px; }
+
+.toolbar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+.toolbar input[type=text] { background:var(--surface); border:1px solid var(--border);
+  color:var(--text); padding:6px 12px; border-radius:6px; font-size:13px; width:300px; }
+.toolbar input::placeholder { color:var(--text-dim); }
+.toolbar select { background:var(--surface); border:1px solid var(--border);
+  color:var(--text); padding:6px 10px; border-radius:6px; font-size:13px; }
+.toolbar .count { color:var(--text-dim); font-size:12px; margin-left:auto; }
+
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:500; }
+.tag-text { background:#1e3a5f; color:#60a5fa; }
+.tag-figure { background:#3b1f4a; color:#c084fc; }
+.tag-table { background:#1a3c2e; color:#4ade80; }
+.tag-equation { background:#3b2f1a; color:#fbbf24; }
+.tag-easy { background:#1a3c2e; color:#4ade80; }
+.tag-medium { background:#3b2f1a; color:#fbbf24; }
+.tag-hard { background:#3b1a1a; color:#f87171; }
+.tag-paper { background:var(--surface2); color:var(--cyan); }
+.tag-filtered { background:#1a3c2e; color:#22c55e; }
+.tag-removed { background:#3b1a1a; color:#ef4444; }
+.tag-mode { background:var(--surface2); color:var(--pink); }
+
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+              gap:12px; margin-bottom:24px; }
+.stat-card { background:var(--surface); border:1px solid var(--border);
+             border-radius:8px; padding:16px; }
+.stat-card .stat-value { font-size:28px; font-weight:600; color:var(--accent-light); }
+.stat-card .stat-label { font-size:12px; color:var(--text-dim); margin-top:4px; }
+
+.card { background:var(--surface); border:1px solid var(--border); border-radius:8px;
+        padding:16px; margin-bottom:12px; transition:border-color 0.15s; cursor:pointer; }
+.card:hover { border-color:var(--accent); }
+.card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.card-header .id { font-family:monospace; font-size:11px; color:var(--text-dim); }
+.card-body .statement { font-size:14px; line-height:1.6; }
+.card-footer { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.source-quote { background:var(--surface2); border-left:3px solid var(--accent);
+  padding:8px 12px; margin-top:8px; font-size:12px; color:var(--text-dim);
+  border-radius:0 4px 4px 0; max-height:100px; overflow-y:auto; }
+.reasoning { font-size:12px; color:var(--text-dim); margin-top:6px; font-style:italic; }
+
+.question-card { background:var(--surface); border:1px solid var(--border);
+                 border-radius:8px; margin-bottom:16px; overflow:hidden; }
+.q-header { padding:16px; border-bottom:1px solid var(--border); }
+.q-header .q-text { font-size:15px; font-weight:500; line-height:1.6; }
+.q-answer { padding:12px 16px; background:var(--surface2); font-size:13px;
+            border-bottom:1px solid var(--border); }
+.q-answer strong { color:var(--green); }
+.q-hops { padding:12px 16px; }
+
+.hop { background:var(--bg); border-radius:6px; padding:10px 12px; margin-bottom:8px;
+       border-left:3px solid var(--accent); }
+.hop-header { display:flex; gap:8px; align-items:center; font-size:12px;
+              color:var(--text-dim); margin-bottom:4px; }
+.hop .sub-q { font-size:13px; margin-bottom:4px; }
+.hop .sub-a { font-size:12px; color:var(--green); }
+.hop-facts { margin-top:6px; padding-top:6px; border-top:1px solid var(--border); }
+.hop-fact { font-size:11px; color:var(--text-dim); padding:2px 0; display:flex; gap:6px; }
+.hop-fact .mod-dot { width:6px; height:6px; border-radius:50%; margin-top:5px; flex-shrink:0; }
+
+.eval-table { width:100%; border-collapse:collapse; font-size:13px; }
+.eval-table th, .eval-table td { padding:8px 12px; border:1px solid var(--border); text-align:center; }
+.eval-table th { background:var(--surface2); color:var(--text-dim); font-weight:500; }
+.eval-table td { background:var(--surface); }
+
+.image-preview { max-width:400px; max-height:200px; border-radius:6px; margin-top:8px; cursor:pointer; }
+.image-modal { position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center;
+  z-index:1000; cursor:pointer; }
+.image-modal img { max-width:90%; max-height:90%; border-radius:8px; }
+
+.pagination { display:flex; gap:8px; align-items:center; margin-top:16px; justify-content:center; }
+.pagination button { background:var(--surface); border:1px solid var(--border); color:var(--text);
+  padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; }
+.pagination button:hover { background:var(--surface2); }
+.pagination button.active { background:var(--accent); border-color:var(--accent); }
+.pagination button:disabled { opacity:0.4; cursor:default; }
+.pagination .page-info { font-size:12px; color:var(--text-dim); }
+
+.detail-panel { position:fixed; top:0; right:0; width:520px; height:100%;
+  background:var(--surface); border-left:1px solid var(--border); z-index:100;
+  overflow-y:auto; padding:20px; transform:translateX(100%); transition:transform 0.2s; }
+.detail-panel.open { transform:translateX(0); }
+.detail-panel .close-btn { position:absolute; top:12px; right:12px; background:none;
+  border:none; color:var(--text-dim); cursor:pointer; font-size:18px; }
+.detail-panel h3 { font-size:16px; margin-bottom:12px; }
+.detail-panel .field { margin-bottom:12px; }
+.detail-panel .field-label { font-size:11px; text-transform:uppercase; letter-spacing:0.5px;
+  color:var(--text-dim); margin-bottom:2px; }
+.detail-panel .field-value { font-size:13px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <h1>Cross-Paper Bench</h1>
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" data-view="overview" onclick="switchView('overview')">
+      <span>Dashboard</span>
+    </div>
+    <div class="nav-section">Data</div>
+    <div class="nav-item" data-view="facts" onclick="switchView('facts')">
+      <span>All Facts</span><span class="badge" id="badge-facts">0</span>
+    </div>
+    <div class="nav-item" data-view="filtered" onclick="switchView('filtered')">
+      <span>Filtered Facts</span><span class="badge" id="badge-filtered">0</span>
+    </div>
+    <div class="nav-section">Questions</div>
+    <div id="question-nav"></div>
+    <div class="nav-section">Evaluation</div>
+    <div class="nav-item" data-view="eval" onclick="switchView('eval')">
+      <span>Eval Results</span>
+    </div>
+  </div>
+  <div class="main" id="main-content">
+    <p style="color:var(--text-dim);padding:40px">Loading data...</p>
+  </div>
+</div>
+
+<div class="detail-panel" id="detail-panel">
+  <button class="close-btn" onclick="closeDetail()">&times;</button>
+  <div id="detail-content"></div>
+</div>
+
+<script>
+let DATA = null;
+const PAGE_SIZE = 50;
+let currentView = 'overview';
+let currentPage = 0;
+let currentFilters = {};
+
+function esc(t) {
+  if (!t) return '';
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function loadData() {
+  const resp = await fetch('/api/data');
+  DATA = await resp.json();
+  document.getElementById('badge-facts').textContent = DATA.all_facts.length;
+  document.getElementById('badge-filtered').textContent = DATA.filtered_facts.length;
+  const qNav = document.getElementById('question-nav');
+  qNav.innerHTML = '';
+  for (const [mode, qs] of Object.entries(DATA.questions)) {
+    const d = document.createElement('div');
+    d.className = 'nav-item';
+    d.dataset.view = 'questions';
+    d.dataset.mode = mode;
+    const label = mode.replace('multihop_questions_','').replace('_multihop_questions','');
+    d.innerHTML = '<span>'+esc(label)+'</span><span class="badge">'+qs.length+'</span>';
+    d.onclick = () => switchView('questions', mode);
+    qNav.appendChild(d);
+  }
+  render();
+}
+
+function switchView(view, extra) {
+  currentView = view;
+  currentPage = 0;
+  currentFilters = {};
+  if (extra) currentFilters.mode = extra;
+  document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
+  if (extra) {
+    const el = document.querySelector('.nav-item[data-mode="'+extra+'"]');
+    if (el) el.classList.add('active');
+  } else {
+    const el = document.querySelector('.nav-item[data-view="'+view+'"]');
+    if (el) el.classList.add('active');
+  }
+  render();
+}
+
+function render() {
+  if (!DATA) return;
+  const m = document.getElementById('main-content');
+  if (currentView === 'overview') m.innerHTML = renderOverview();
+  else if (currentView === 'facts') m.innerHTML = renderFacts(DATA.all_facts, 'All Atomic Facts');
+  else if (currentView === 'filtered') m.innerHTML = renderFacts(DATA.filtered_facts, 'Filtered Facts (survived parametric test)');
+  else if (currentView === 'questions') m.innerHTML = renderQuestions();
+  else if (currentView === 'eval') m.innerHTML = renderEval();
+}
+
+function renderOverview() {
+  const nP = Object.keys(DATA.papers).length;
+  const nRem = DATA.all_facts.length - DATA.filtered_facts.length;
+  const mc = {}, dc = {}, pc = {};
+  DATA.all_facts.forEach(f => {
+    mc[f.modality] = (mc[f.modality]||0)+1;
+    dc[f.difficulty] = (dc[f.difficulty]||0)+1;
+    pc[f.paper_id] = (pc[f.paper_id]||0)+1;
+  });
+  let tQ = 0; const mQ = {};
+  for (const [mode, qs] of Object.entries(DATA.questions)) {
+    tQ += qs.length; mQ[mode.replace('multihop_questions_','')] = qs.length;
+  }
+  let paperCards = '';
+  for (const [pid, p] of Object.entries(DATA.papers)) {
+    paperCards += '<div class="stat-card"><div class="stat-label" style="margin-bottom:4px">'+pid+'</div>'
+      +'<div style="font-size:13px;font-weight:500;margin-bottom:4px">'+esc(p.title.substring(0,80))+'</div>'
+      +'<div style="font-size:11px;color:var(--text-dim)">'
+      +p.n_sections+' sec &middot; '+p.n_figures+' fig &middot; '+p.n_tables+' tab &middot; '
+      +p.n_equations+' eq &middot; '+(pc[pid]||0)+' facts</div></div>';
+  }
+  return '<h2>Dashboard</h2>'
+    +'<div class="stats-grid">'
+    +'<div class="stat-card"><div class="stat-value">'+nP+'</div><div class="stat-label">Papers</div></div>'
+    +'<div class="stat-card"><div class="stat-value">'+DATA.all_facts.length+'</div><div class="stat-label">Total Facts</div></div>'
+    +'<div class="stat-card"><div class="stat-value">'+DATA.filtered_facts.length+'</div><div class="stat-label">Kept Facts</div></div>'
+    +'<div class="stat-card"><div class="stat-value" style="color:var(--red)">'+nRem+'</div><div class="stat-label">Removed (easy)</div></div>'
+    +'<div class="stat-card"><div class="stat-value">'+tQ+'</div><div class="stat-label">Questions</div></div>'
+    +'</div>'
+    +'<h3 style="margin-bottom:12px">Papers</h3><div class="stats-grid">'+paperCards+'</div>'
+    +'<h3 style="margin-bottom:12px">By Modality</h3><div class="stats-grid">'
+    +Object.entries(mc).map(([m,c])=>'<div class="stat-card"><div class="stat-value">'+c+'</div><div class="stat-label">'+m+'</div></div>').join('')
+    +'</div>'
+    +'<h3 style="margin-bottom:12px">By Difficulty</h3><div class="stats-grid">'
+    +Object.entries(dc).map(([d,c])=>'<div class="stat-card"><div class="stat-value">'+c+'</div><div class="stat-label">'+d+'</div></div>').join('')
+    +'</div>'
+    +'<h3 style="margin-bottom:12px">Questions by Mode</h3><div class="stats-grid">'
+    +Object.entries(mQ).map(([m,c])=>'<div class="stat-card"><div class="stat-value">'+c+'</div><div class="stat-label">'+m+'</div></div>').join('')
+    +'</div>';
+}
+
+function renderFacts(facts, title) {
+  const fSet = new Set(DATA.filtered_ids);
+  const papers = [...new Set(DATA.all_facts.map(f=>f.paper_id))];
+  const mods = [...new Set(DATA.all_facts.map(f=>f.modality))];
+  let filtered = facts;
+  if (currentFilters.search) {
+    const q = currentFilters.search.toLowerCase();
+    filtered = filtered.filter(f => f.statement.toLowerCase().includes(q)
+      || f.fact_id.toLowerCase().includes(q)
+      || (f.source_section||'').toLowerCase().includes(q));
+  }
+  if (currentFilters.paper) filtered = filtered.filter(f => f.paper_id === currentFilters.paper);
+  if (currentFilters.modality) filtered = filtered.filter(f => f.modality === currentFilters.modality);
+  if (currentFilters.difficulty) filtered = filtered.filter(f => f.difficulty === currentFilters.difficulty);
+  const total = filtered.length;
+  const start = currentPage * PAGE_SIZE;
+  const page = filtered.slice(start, start + PAGE_SIZE);
+  const nPages = Math.ceil(total / PAGE_SIZE);
+  const isAll = title.includes('All');
+
+  let cards = page.map((f, i) => {
+    const kept = fSet.has(f.fact_id);
+    const ftag = isAll ? (kept ? '<span class="tag tag-filtered">kept</span>' : '<span class="tag tag-removed">removed</span>') : '';
+    const img = f.image_path
+      ? '<img class="image-preview" src="/image?path='+encodeURIComponent(f.image_path)+'" loading="lazy" onclick="event.stopPropagation();showImg(this.src)">'
+      : '';
+    const fl = DATA.filter_log[f.fact_id];
+    const fn = fl ? '<div style="font-size:11px;color:var(--text-dim);margin-top:4px">Filter score: '+(fl.score||0).toFixed(3)+'</div>' : '';
+    return '<div class="card" onclick="showFact(\''+f.fact_id+'\')">'
+      +'<div class="card-header"><span class="id">'+f.fact_id+'</span><span class="id">#'+(start+i+1)+' / '+total+'</span></div>'
+      +'<div class="card-body"><div class="statement">'+esc(f.statement)+'</div>'
+      +(f.source_text ? '<div class="source-quote">'+esc(f.source_text.substring(0,300))+'</div>' : '')
+      +(f.reasoning ? '<div class="reasoning">'+esc(f.reasoning)+'</div>' : '')
+      +img+fn+'</div>'
+      +'<div class="card-footer">'
+      +'<span class="tag tag-'+f.modality+'">'+f.modality+'</span>'
+      +'<span class="tag tag-'+f.difficulty+'">'+f.difficulty+'</span>'
+      +'<span class="tag tag-paper">'+f.paper_id.substring(0,10)+'</span>'
+      +(f.source_section ? '<span class="tag" style="background:var(--surface2);color:var(--text-dim)">'+f.source_section+'</span>' : '')
+      +ftag+'</div></div>';
+  }).join('');
+
+  return '<h2>'+esc(title)+'</h2>'
+    +'<div class="toolbar">'
+    +'<input type="text" placeholder="Search facts..." value="'+(currentFilters.search||'')+'" oninput="debSearch(this.value)">'
+    +'<select onchange="setF(\'paper\',this.value)"><option value="">All papers</option>'
+    +papers.map(p=>'<option value="'+p+'"'+(currentFilters.paper===p?' selected':'')+'>'+p.substring(0,14)+'</option>').join('')+'</select>'
+    +'<select onchange="setF(\'modality\',this.value)"><option value="">All modalities</option>'
+    +mods.map(m=>'<option value="'+m+'"'+(currentFilters.modality===m?' selected':'')+'>'+m+'</option>').join('')+'</select>'
+    +'<select onchange="setF(\'difficulty\',this.value)"><option value="">All difficulties</option>'
+    +['easy','medium','hard'].map(d=>'<option value="'+d+'"'+(currentFilters.difficulty===d?' selected':'')+'>'+d+'</option>').join('')+'</select>'
+    +'<span class="count">'+(start+1)+'-'+Math.min(start+PAGE_SIZE,total)+' of '+total+'</span>'
+    +'</div>'+cards+paginate(nPages);
+}
+
+function renderQuestions() {
+  const mode = currentFilters.mode || Object.keys(DATA.questions)[0] || '';
+  const qs = DATA.questions[mode] || [];
+  let filtered = qs;
+  if (currentFilters.search) {
+    const q = currentFilters.search.toLowerCase();
+    filtered = filtered.filter(x => x.overarching_question.toLowerCase().includes(q) || x.gold_answer.toLowerCase().includes(q));
+  }
+  if (currentFilters.difficulty) filtered = filtered.filter(x => x.difficulty === currentFilters.difficulty);
+  if (currentFilters.reasoning) filtered = filtered.filter(x => x.reasoning_type === currentFilters.reasoning);
+  const total = filtered.length;
+  const start = currentPage * PAGE_SIZE;
+  const page = filtered.slice(start, start + PAGE_SIZE);
+  const nPages = Math.ceil(total / PAGE_SIZE);
+  const rts = [...new Set(qs.map(q=>q.reasoning_type))];
+  const label = mode.replace('multihop_questions_','');
+
+  let cards = page.map((q, i) => {
+    const hops = q.hops.map(h => {
+      const ff = h.facts.map(f => {
+        const col = {text:'#60a5fa',figure:'#c084fc',table:'#4ade80',equation:'#fbbf24'}[f.modality]||'#9ca3af';
+        return '<div class="hop-fact"><span class="mod-dot" style="background:'+col+'"></span>'
+          +'<span>['+f.paper_id.substring(0,8)+'/'+f.modality+'] '+esc(f.statement.substring(0,150))+'</span></div>';
+      }).join('');
+      const dep = h.depends_on_hops && h.depends_on_hops.length ? ' &rarr; depends on '+h.depends_on_hops.join(',') : '';
+      const rt = h.hop_reasoning_type ? ' ['+h.hop_reasoning_type+']' : '';
+      return '<div class="hop"><div class="hop-header"><strong>Hop '+h.hop_idx+'</strong><span>'+h.facts.length+' fact(s)'+rt+dep+'</span></div>'
+        +(h.sub_question ? '<div class="sub-q"><b>Q:</b> '+esc(h.sub_question)+'</div>' : '')
+        +(h.sub_answer ? '<div class="sub-a"><b>A:</b> '+esc(h.sub_answer)+'</div>' : '')
+        +'<div class="hop-facts">'+ff+'</div></div>';
+    }).join('');
+    const adv = q.adversarial_score != null ? '<span class="tag" style="background:var(--surface2);color:var(--orange)">adv='+q.adversarial_score.toFixed(2)+'</span>' : '';
+    const et = q.entanglement_type ? '<span class="tag" style="background:var(--surface2);color:var(--cyan)">'+q.entanglement_type+'</span>' : '';
+    return '<div class="question-card"><div class="q-header">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:8px">'
+      +'<span style="font-size:11px;color:var(--text-dim)">'+q.question_id+' &middot; #'+(start+i+1)+'</span>'
+      +'<div style="display:flex;gap:6px"><span class="tag tag-'+q.difficulty+'">'+q.difficulty+'</span>'
+      +'<span class="tag tag-mode">'+q.reasoning_type+'</span>'+adv+et+'</div></div>'
+      +'<div class="q-text">'+esc(q.overarching_question)+'</div>'
+      +'<div style="display:flex;gap:6px;margin-top:8px">'
+      +q.paper_ids.map(p=>'<span class="tag tag-paper">'+p.substring(0,10)+'</span>').join('')
+      +q.modalities.map(m=>'<span class="tag tag-'+m+'">'+m+'</span>').join('')
+      +'</div></div>'
+      +'<div class="q-answer"><strong>Gold: </strong>'+esc(q.gold_answer)+'</div>'
+      +'<div class="q-hops">'+hops+'</div></div>';
+  }).join('');
+
+  return '<h2>Questions: '+esc(label)+'</h2>'
+    +'<div class="toolbar">'
+    +'<input type="text" placeholder="Search questions..." value="'+(currentFilters.search||'')+'" oninput="debSearch(this.value)">'
+    +'<select onchange="setF(\'difficulty\',this.value)"><option value="">All difficulties</option>'
+    +['easy','medium','hard'].map(d=>'<option value="'+d+'"'+(currentFilters.difficulty===d?' selected':'')+'>'+d+'</option>').join('')+'</select>'
+    +'<select onchange="setF(\'reasoning\',this.value)"><option value="">All types</option>'
+    +rts.map(r=>'<option value="'+r+'"'+(currentFilters.reasoning===r?' selected':'')+'>'+r+'</option>').join('')+'</select>'
+    +'<span class="count">'+(start+1)+'-'+Math.min(start+PAGE_SIZE,total)+' of '+total+'</span>'
+    +'</div>'+cards+paginate(nPages);
+}
+
+function renderEval() {
+  if (!Object.keys(DATA.eval).length) return '<h2>Evaluation</h2><p style="color:var(--text-dim)">No evaluation data.</p>';
+  let html = '<h2>Evaluation Results</h2>';
+  for (const [name, data] of Object.entries(DATA.eval)) {
+    const s = data.summary || {};
+    const levels = ['overarching','hop_by_hop','atomic_fact'];
+    const conds = ['all_papers','only_sections','atomic_facts','parametric'];
+    html += '<h3 style="margin:16px 0 8px">'+esc(name)+'</h3>';
+    html += '<table class="eval-table"><thead><tr><th>Level</th>';
+    conds.forEach(c => html += '<th>'+c.replace(/_/g,' ')+'</th>');
+    html += '</tr></thead><tbody>';
+    levels.forEach(lv => {
+      html += '<tr><td style="text-align:left;font-weight:500">'+lv.replace(/_/g,' ')+'</td>';
+      conds.forEach(cd => {
+        const e = s[lv+'_'+cd] || {};
+        const v = e.mean != null ? e.mean.toFixed(3) : '-';
+        html += '<td>'+v+' <span style="color:var(--text-dim);font-size:10px">(n='+(e.n||0)+')</span></td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    if (data.results) {
+      for (const [mn, md] of Object.entries(data.results)) {
+        const ms = md.summary || {};
+        html += '<h4 style="margin:12px 0 6px">Model: '+esc(mn)+'</h4><table class="eval-table"><thead><tr><th>Level</th>';
+        conds.forEach(c => html += '<th>'+c.replace(/_/g,' ')+'</th>');
+        html += '</tr></thead><tbody>';
+        levels.forEach(lv => {
+          html += '<tr><td style="text-align:left">'+lv.replace(/_/g,' ')+'</td>';
+          conds.forEach(cd => {
+            const e = ms[lv+'_'+cd] || {};
+            html += '<td>'+(e.mean!=null?e.mean.toFixed(3):'-')+'</td>';
+          });
+          html += '</tr>';
+        });
+        html += '</tbody></table>';
+      }
+    }
+  }
+  return html;
+}
+
+function paginate(n) {
+  if (n <= 1) return '';
+  let h = '<div class="pagination">';
+  h += '<button '+(currentPage===0?'disabled':'')+' onclick="goPage('+(currentPage-1)+')">&laquo;</button>';
+  let s = Math.max(0, currentPage-3), e = Math.min(n, s+7);
+  if (e-s < 7) s = Math.max(0, e-7);
+  for (let p=s; p<e; p++) h += '<button class="'+(p===currentPage?'active':'')+'" onclick="goPage('+p+')">'+(p+1)+'</button>';
+  h += '<button '+(currentPage>=n-1?'disabled':'')+' onclick="goPage('+(currentPage+1)+')">&raquo;</button>';
+  h += '<span class="page-info">Page '+(currentPage+1)+'/'+n+'</span></div>';
+  return h;
+}
+
+function goPage(p) { currentPage=p; render(); window.scrollTo(0,0); }
+let _st;
+function debSearch(v) { clearTimeout(_st); _st=setTimeout(()=>{currentFilters.search=v;currentPage=0;render();},250); }
+function setF(k,v) { currentFilters[k]=v||undefined; currentPage=0; render(); }
+
+function showFact(fid) {
+  const f = DATA.all_facts.find(x=>x.fact_id===fid);
+  if (!f) return;
+  const kept = DATA.filtered_ids.includes(f.fact_id);
+  const fl = DATA.filter_log[f.fact_id];
+  const img = f.image_path ? '<img style="max-width:100%;border-radius:6px" src="/image?path='+encodeURIComponent(f.image_path)+'">' : 'None';
+  document.getElementById('detail-content').innerHTML =
+    '<h3>Fact Detail</h3>'
+    +field('Fact ID','<code>'+f.fact_id+'</code>')
+    +field('Statement',esc(f.statement))
+    +field('Paper',f.paper_id)
+    +field('Modality','<span class="tag tag-'+f.modality+'">'+f.modality+'</span>')
+    +field('Difficulty','<span class="tag tag-'+f.difficulty+'">'+f.difficulty+'</span>')
+    +field('Section',f.source_section||'N/A')
+    +field('Source Quote','<div style="font-size:12px;color:var(--text-dim)">'+esc(f.source_text||'N/A')+'</div>')
+    +field('Reasoning','<div style="font-size:12px;font-style:italic">'+esc(f.reasoning||'N/A')+'</div>')
+    +field('Filter',(kept?'<span class="tag tag-filtered">Kept</span>':'<span class="tag tag-removed">Removed</span>')
+      +(fl ? '<div style="font-size:11px;margin-top:4px">Score: '+(fl.score||0).toFixed(3)+'</div>' : ''))
+    +field('Image',img)
+    +field('Source Mode',f.source_mode);
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function field(label,value) {
+  return '<div class="field"><div class="field-label">'+label+'</div><div class="field-value">'+value+'</div></div>';
+}
+
+function closeDetail() { document.getElementById('detail-panel').classList.remove('open'); }
+function showImg(src) {
+  const m = document.createElement('div'); m.className='image-modal';
+  m.innerHTML='<img src="'+src+'">'; m.onclick=()=>m.remove(); document.body.appendChild(m);
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeDetail(); });
+
+loadData();
+</script>
+</body>
+</html>

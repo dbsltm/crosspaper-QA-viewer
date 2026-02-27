@@ -1,0 +1,196 @@
+[
+  {
+    "question_id": "131f93dd203810e8",
+    "overarching_question": "Assume A UTO H ALLUSION\u2019s objective can be summarized as maximizing a ratio: (distance between the LVLM\u2019s generated answer and the ground truth) / (discrepancy between the LVLM\u2019s answer with vs. without visual input). If we proxy \u201cdistance to ground truth\u201d by hallucination rate (%) and \u201cdiscrepancy with vs. without visual input\u201d by BLEU-4 (higher BLEU implies lower discrepancy), then for the LLaVA model results: which method has the highest proxy objective value, and by how much does it exceed the lowest proxy objective value? (Use EFUF, RLHF, HADPO, and POVID from the table; and note that mPLUG-Owl is a modular multimodal approach, so treat these methods as multimodal LVLM settings where the proxy applies.)",
+    "gold_answer": "We compute proxy objective = hallucination_rate / BLEU4 for each method (both in the LLaVA multimodal setting).\n\nEFUF: 41.9 / 16.8 = 2.4940 (approx)\nRLHF: 60.2 / 12.6 = 4.7778 (approx)\nHADPO: 52.3 / 15.7 = 3.3312 (approx)\nPOVID: 41.3 / 15.1 = 2.7351 (approx)\n\nHighest proxy objective value = RLHF = 4.7778.\nLowest proxy objective value = EFUF = 2.4940.\n\nExcess of highest over lowest = 4.7778 \u2212 2.4940 = 2.2838 (approx).",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_66dc8a7d09b0"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_66dc8a7d09b0",
+            "source_id": "U_b6af17a07727",
+            "paper_id": "8922e6cfed54",
+            "statement": "The objective function in A UTO H ALLUSION maximizes the distance between the LVLM's generated answer and the ground truth, while constraining the discrepancy between the LVLM's answer with and without visual input to ensure hallucinations are dominated by the language prior rather than visual information.",
+            "modality": "equation",
+            "difficulty": "hard",
+            "reasoning": "This fact requires understanding the mathematical formulation and its purpose: the method's novelty lies in explicitly targeting language prior-induced hallucinations by controlling for visual input, which is a nuanced and central aspect of the methodology.",
+            "source_mode": "parsed",
+            "source_section": "page_4",
+            "source_text": "The objective function (1) maximizes the distance between the generated text f LVLM and y Q to produce hallucination. To leverage and probe the bias in the language components f LLM of the victim LVLM, we use constrain (2) to control the discrepancies between responses, with and without visual input, within a tolerance \u03f5. This ensures that the answer is dominated by the prior language component rather than the visual component.",
+            "image_path": null,
+            "metadata": {},
+            "content": "The objective function in A UTO H ALLUSION maximizes the distance between the LVLM's generated answer and the ground truth, while constraining the discrepancy between the LVLM's answer with and without visual input to ensure hallucinations are dominated by the language prior rather than visual information."
+          }
+        ],
+        "sub_question": "From A UTO H ALLUSION\u2019s objective description, what proxy formula are we asked to compute?",
+        "sub_answer": "Proxy objective = (distance to ground truth) / (discrepancy with vs. without visual input), proxied as hallucination_rate / BLEU-4."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_f5c9aa7d739d"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_f5c9aa7d739d",
+            "source_id": "U_54ad9d66b5bf",
+            "paper_id": "699320ac51ec",
+            "statement": "The EFUF method achieves a hallucination rate of 41.9% and a BLEU-4 score of 16.8 on the LLaVA model, outperforming RLHF (hallucination rate 60.2%, BLEU-4 12.6), HADPO (hallucination rate 52.3%, BLEU-4 15.7), and POVID (hallucination rate 41.3%, BLEU-4 15.1), while maintaining comparable or superior generation quality with lower data and training costs.",
+            "modality": "table",
+            "difficulty": "medium",
+            "reasoning": "This fact synthesizes quantitative results from Table 4 and contextualizes them with the text's claim about EFUF's efficiency and performance relative to other methods, which is crucial for understanding EFUF's practical advantages.",
+            "source_mode": "parsed",
+            "source_section": "page_8",
+            "source_text": "We measure EFUF\u2019s generation quality along with hallucination rate in Table 4. Compared to other hallucination mitigation methods, EFUF demonstrates comparable or superior performance, while requiring minimal data construction cost and training resources among all. Additionally, our improvements in generation quality are on par with RLHF-based methods, which typically demand expensive human...",
+            "image_path": null,
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The EFUF method achieves a hallucination rate of 41.9% and a BLEU-4 score of 16.8 on the LLaVA model, outperforming RLHF (hallucination rate 60.2%, BLEU-4 12.6), HADPO (hallucination rate 52.3%, BLEU-4 15.7), and POVID (hallucination rate 41.3%, BLEU-4 15.1), while maintaining comparable or superior generation quality with lower data and training costs."
+          }
+        ],
+        "sub_question": "Using the LLaVA table values, what are hallucination_rate/BLEU-4 for EFUF, RLHF, HADPO, and POVID?",
+        "sub_answer": "EFUF=41.9/16.8\u22482.4940; RLHF=60.2/12.6\u22484.7778; HADPO=52.3/15.7\u22483.3312; POVID=41.3/15.1\u22482.7351."
+      },
+      {
+        "hop_idx": 2,
+        "fact_ids": [
+          "F_2b5755255afc"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_2b5755255afc",
+            "source_id": "U_5385ab300323",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The paper 'mplug-owl: Modularization empowers large language models with multimodality' (Ye et al., 2023) introduces a modular approach that enables large language models to handle multimodal inputs.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact is meaningful because it highlights a novel methodological contribution\u2014modularization for multimodality in large language models\u2014which is central to understanding advances in multimodal AI.",
+            "source_mode": "parsed",
+            "source_section": "page_11",
+            "source_text": "Qinghao Ye, Haiyang Xu, Guohai Xu, Jiabo Ye, Ming Yan,   Yiyang   Zhou,   Junyang   Wang,   Anwen   Hu, Pengcheng Shi, Yaya Shi, Chenliang Li, Yuanhong Xu, Hehong Chen, Junfeng Tian, Qian Qi, Ji Zhang, and Fei Huang. 2023.   mplug-owl:   Modularization empowers large language models with multimodality. CoRR , abs/2304.14178.",
+            "image_path": null,
+            "metadata": {},
+            "content": "The paper 'mplug-owl: Modularization empowers large language models with multimodality' (Ye et al., 2023) introduces a modular approach that enables large language models to handle multimodal inputs."
+          }
+        ],
+        "sub_question": "Given these are multimodal LVLM methods (consistent with modular multimodality like mPLUG-Owl), which method maximizes the proxy objective and what is the gap to the minimum?",
+        "sub_answer": "Max=RLHF\u22484.7778; Min=EFUF\u22482.4940; Gap\u22484.7778\u22122.4940=2.2838."
+      }
+    ],
+    "paper_ids": [
+      "8922e6cfed54",
+      "d2cdaabd9749",
+      "699320ac51ec"
+    ],
+    "modalities": [
+      "equation",
+      "text",
+      "table"
+    ],
+    "difficulty": "hard",
+    "reasoning_type": "computation",
+    "generation_mode": "computation",
+    "adversarial_score": 0.0
+  },
+  {
+    "question_id": "43871afba59c8e95",
+    "overarching_question": "Treat the two failure cases in the manipulated hiking scene (GPT-4V and LLaVA-1.6 both answered \u201cNo\u201d despite an inserted refrigerator) as 2 hallucination failures, and treat the abnormal object insertion example in Figure 5 (a goat inserted onto an office chair) as 1 additional hallucination failure. Using the LRV-Instruction human faithfulness scores, compute the average faithfulness score of the two LLaVA variants mentioned (LLaVA and LLaVA-1.5), then divide that average by the total number of hallucination failures counted above. What is the resulting value?",
+    "gold_answer": "From the facts:\n- Hallucination failures counted: 2 (GPT-4V + LLaVA-1.6 failing to detect the refrigerator) + 1 (goat inserted on office chair example) = 3 total failures.\n- Faithfulness scores: LLaVA-1.5 = 0.7855, LLaVA = 0.7017.\n\nStep 1: Average faithfulness of the two LLaVA variants\nAverage = (0.7855 + 0.7017) / 2 = 1.4872 / 2 = 0.7436.\n\nStep 2: Divide by total hallucination failures\nResult = 0.7436 / 3 = 0.2478666667 \u2248 0.2479.\n\nFinal answer: approximately 0.2479.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_4da29fa5e762"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_4da29fa5e762",
+            "source_id": "U_50032d922e97",
+            "paper_id": "d2cdaabd9749",
+            "statement": "On the LRV-Instruction dataset, the LLaVA-1.5 model achieved the highest human faithfulness score (0.7855) compared to InstructBLIP (0.6626), Multimodal-GPT (0.4903), mPLUG-Owl (0.6433), MiniGPT-4 (0.4638), and LLaVA (0.7017), as measured by a Likert-scale-based human evaluation of hallucinations in generated answers.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact quantitatively compares multiple models on a specific dataset using a human-evaluated metric, highlighting LLaVA-1.5's superior performance. It requires interpreting the context of the metric and the dataset, making it more than a simple fact.",
+            "source_mode": "parsed",
+            "source_section": "page_12",
+            "source_text": "The results are shown as follows, which are consistent with the experimental results on datasets LLaVA-1k and MSCOCO-Cap: InstructBLIP 0.6626, Multimodal-GPT 0.4903, mPLUG-Owl 0.6433, MiniGPT-4 0.4638, LLaVA 0.7017, LLaVA-1.5 0.7855.",
+            "image_path": null,
+            "metadata": {},
+            "content": "On the LRV-Instruction dataset, the LLaVA-1.5 model achieved the highest human faithfulness score (0.7855) compared to InstructBLIP (0.6626), Multimodal-GPT (0.4903), mPLUG-Owl (0.6433), MiniGPT-4 (0.4638), and LLaVA (0.7017), as measured by a Likert-scale-based human evaluation of hallucinations in generated answers."
+          }
+        ],
+        "sub_question": "How many hallucination failures are counted from the manipulated hiking scene and the Figure 5 abnormal insertion example?",
+        "sub_answer": "Manipulated hiking scene: 2 failures (GPT-4V and LLaVA-1.6). Figure 5 example: 1 failure (goat inserted on office chair). Total = 2 + 1 = 3."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_33b8849eec43"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_33b8849eec43",
+            "source_id": "U_e04cbae6f5d3",
+            "paper_id": "8922e6cfed54",
+            "statement": "Both GPT-4V and LLaVA-1.6 failed to detect the inserted refrigerator object in the manipulated hiking scene image, incorrectly answering 'No' to the existence question despite the object's presence.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact highlights a key failure mode for both models in detecting non-perceivable or contextually irrelevant inserted objects, which is central to evaluating model robustness against adversarial manipulations.",
+            "source_mode": "parsed",
+            "source_section": "page_23",
+            "source_text": "Attack:   Adding new irrelevant object  Refrigerator  \u2013 Existence Question:   Is there a/an refrigerator in this image? GPT-4V:   No, there is no refrigerator in this image. ... LLaVA-1.6:   No, there is no refrigerator in this image.",
+            "image_path": null,
+            "metadata": {},
+            "content": "Both GPT-4V and LLaVA-1.6 failed to detect the inserted refrigerator object in the manipulated hiking scene image, incorrectly answering 'No' to the existence question despite the object's presence."
+          }
+        ],
+        "sub_question": "What is the average human faithfulness score of LLaVA-1.5 and LLaVA on LRV-Instruction?",
+        "sub_answer": "Average = (0.7855 + 0.7017) / 2 = 0.7436."
+      },
+      {
+        "hop_idx": 2,
+        "fact_ids": [
+          "F_6c1dba459f2f"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_6c1dba459f2f",
+            "source_id": "U_49625a988b46",
+            "paper_id": "8922e6cfed54",
+            "statement": "The image in Figure 5 shows a goat inserted onto an office chair in a modern office environment, illustrating an example of hallucination by abnormal object insertion.",
+            "modality": "figure",
+            "difficulty": "easy",
+            "reasoning": "The presence of a goat on an office chair is visually abnormal and contextually inconsistent with a typical office scene, directly illustrating the concept described in the caption.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p17",
+            "source_text": "We highlight hallucination context made by Correctness, Inconsistency, or potentially mixed.",
+            "image_path": "outputs/parsed/8922e6cfed54/figures/fig_012_p17.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The image in Figure 5 shows a goat inserted onto an office chair in a modern office environment, illustrating an example of hallucination by abnormal object insertion."
+          }
+        ],
+        "sub_question": "What is the average faithfulness divided by the total counted hallucination failures?",
+        "sub_answer": "0.7436 / 3 = 0.2478666667 \u2248 0.2479."
+      }
+    ],
+    "paper_ids": [
+      "8922e6cfed54",
+      "d2cdaabd9749"
+    ],
+    "modalities": [
+      "figure",
+      "text"
+    ],
+    "difficulty": "hard",
+    "reasoning_type": "computation",
+    "generation_mode": "computation",
+    "adversarial_score": 0.0
+  }
+]

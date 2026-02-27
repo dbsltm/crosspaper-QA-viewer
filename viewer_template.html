@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Max2Facts Viewer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f6fa;color:#2d3436;padding:20px}
+h1{text-align:center;margin-bottom:8px;font-size:1.6em}
+.subtitle{text-align:center;color:#636e72;margin-bottom:20px;font-size:.95em}
+.summary-bar{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.summary-card{background:#fff;border-radius:8px;padding:12px 20px;box-shadow:0 1px 4px rgba(0,0,0,.08);text-align:center;min-width:120px}
+.summary-card .val{font-size:1.5em;font-weight:700}
+.summary-card .lbl{font-size:.8em;color:#636e72}
+.filters{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.filters select,.filters input{padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:.9em}
+.q-card{background:#fff;border-radius:10px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden}
+.q-header{padding:16px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.q-header:hover{background:#f8f9fa}
+.q-id{font-family:monospace;font-size:.8em;color:#636e72}
+.q-text{font-weight:600;flex:1;line-height:1.4}
+.q-badges{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.badge{padding:2px 8px;border-radius:12px;font-size:.75em;font-weight:600}
+.badge-diff{background:#ffeaa7;color:#856404}
+.badge-type{background:#dfe6e9;color:#2d3436}
+.badge-mod{background:#a29bfe;color:#fff}
+.score-pills{display:flex;gap:4px;margin-top:6px}
+.pill{padding:2px 7px;border-radius:10px;font-size:.72em;font-weight:600;color:#fff}
+.q-body{display:none;padding:0 20px 20px}
+.q-body.open{display:block}
+.gold-answer{background:#f0fff4;border-left:3px solid #00b894;padding:10px 14px;margin:10px 0;border-radius:4px}
+.gold-answer .label{font-weight:700;font-size:.85em;color:#00b894;margin-bottom:4px}
+.hop-section{margin:14px 0}
+.hop-title{font-weight:700;font-size:.95em;padding:8px 12px;background:#f8f9fa;border-radius:6px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.hop-sub{font-style:italic;color:#555;margin:4px 0 8px 12px}
+.hop-answer{margin:0 0 8px 12px;color:#2d3436}
+.hop-answer .label{font-weight:600;font-size:.82em;color:#6c5ce7}
+.fact{border:1px solid #eee;border-radius:6px;padding:10px 12px;margin:6px 0 6px 12px;font-size:.9em}
+.fact-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.fact-id{font-family:monospace;font-size:.78em;color:#999}
+.fact-mod{font-size:.78em;font-weight:600;padding:1px 6px;border-radius:8px;display:inline-block}
+.mod-text{background:#dfe6e9;color:#2d3436}
+.mod-figure{background:#a29bfe;color:#fff}
+.mod-table{background:#fd79a8;color:#fff}
+.mod-equation{background:#fdcb6e;color:#2d3436}
+.fact-content{line-height:1.45}
+.fact-source{font-size:.78em;color:#999;margin-top:4px}
+.eval-section{margin-top:12px}
+.eval-section h4{font-size:.9em;margin-bottom:8px;color:#2d3436}
+.eval-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.eval-cell{background:#f8f9fa;border-radius:6px;padding:8px;text-align:center}
+.eval-cell .cond{font-size:.72em;color:#636e72;margin-bottom:2px}
+.eval-cell .score{font-size:1.2em;font-weight:700}
+.toggle-details{font-size:.8em;color:#6c5ce7;cursor:pointer;margin-left:8px;text-decoration:underline}
+.candidate-detail{display:none;margin:4px 0 8px 12px;padding:8px;background:#f8f9fa;border-radius:4px;font-size:.85em}
+.candidate-detail.open{display:block}
+.cond-block{margin-bottom:8px}
+.cond-name{font-weight:600;color:#6c5ce7}
+.cand-text{color:#555;margin:2px 0;white-space:pre-wrap;word-break:break-word}
+.reasoning{color:#888;font-style:italic}
+.chevron{transition:transform .2s;font-size:1.2em;color:#999}
+.chevron.open{transform:rotate(90deg)}
+</style>
+</head>
+<body>
+<h1>Multi-Hop Questions &mdash; Entangled Max2Facts</h1>
+<div class="subtitle">__N_QUESTIONS__ questions &middot; GPT-5.2 evaluation &middot; entangled mode</div>
+<div class="summary-bar" id="summaryBar"></div>
+<div class="filters">
+  <select id="filterDiff"><option value="">All difficulties</option></select>
+  <select id="filterMod"><option value="">All modalities</option></select>
+  <select id="filterType"><option value="">All reasoning types</option></select>
+  <input type="text" id="searchBox" placeholder="Search questions..." style="width:220px">
+</div>
+<div id="questionList"></div>
+<script>
+var DATA = __DATA_JSON__;
+var CONDS=["all_papers","only_sections","atomic_facts","parametric"];
+var CL={all_papers:"All Papers",only_sections:"Sections Only",atomic_facts:"Atomic Facts",parametric:"Parametric"};
+var PL={all_papers:"AP",only_sections:"Sec",atomic_facts:"AF",parametric:"Prm"};
+
+function sc(s){if(s===null||s===undefined)return"#999";if(s>=0.8)return"#00b894";if(s>=0.5)return"#fdcb6e";if(s>=0.3)return"#e17055";return"#d63031"}
+function pill(c,s){var v=(s!==null&&s!==undefined)?s.toFixed(2):"?";return'<span class="pill" style="background:'+sc(s)+'">'+PL[c]+' '+v+'</span>'}
+function esc(t){var d=document.createElement("div");d.textContent=t||"";return d.innerHTML}
+
+function renderSummary(){
+  var bar=document.getElementById("summaryBar"),total=DATA.length,hops=0,facts=0,mods=new Set();
+  DATA.forEach(function(q){(q.hops||[]).forEach(function(h){hops++;(h.facts||[]).forEach(function(f){facts++;mods.add(f.modality)})})});
+  var avg={};
+  CONDS.forEach(function(c){var ss=DATA.filter(function(q){return q.eval&&q.eval.overarching&&q.eval.overarching[c]}).map(function(q){return q.eval.overarching[c].judge_score});avg[c]=ss.length?(ss.reduce(function(a,b){return a+b},0)/ss.length):0});
+  bar.innerHTML='<div class="summary-card"><div class="val">'+total+'</div><div class="lbl">Questions</div></div>'
+    +'<div class="summary-card"><div class="val">'+hops+'</div><div class="lbl">Total Hops</div></div>'
+    +'<div class="summary-card"><div class="val">'+facts+'</div><div class="lbl">Total Facts</div></div>'
+    +'<div class="summary-card"><div class="val" style="color:'+sc(avg.all_papers)+'">'+avg.all_papers.toFixed(3)+'</div><div class="lbl">Avg AP</div></div>'
+    +'<div class="summary-card"><div class="val" style="color:'+sc(avg.parametric)+'">'+avg.parametric.toFixed(3)+'</div><div class="lbl">Avg Param</div></div>'
+    +'<div class="summary-card"><div class="val" style="color:'+sc(avg.all_papers-avg.parametric)+'">'+((avg.all_papers-avg.parametric)>0?"+":"")+(avg.all_papers-avg.parametric).toFixed(3)+'</div><div class="lbl">&Delta;</div></div>';
+}
+
+function populateFilters(){
+  var ds=new Set(),ms=new Set(),ts=new Set();
+  DATA.forEach(function(q){if(q.eval){ds.add(q.eval.difficulty||"unknown");ts.add(q.eval.reasoning_type||"unknown")}(q.hops||[]).forEach(function(h){(h.facts||[]).forEach(function(f){ms.add(f.modality)})})});
+  function ao(sel,vs){vs.forEach(function(v){var o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o)})}
+  ao(document.getElementById("filterDiff"),[...ds].sort());
+  ao(document.getElementById("filterMod"),[...ms].sort());
+  ao(document.getElementById("filterType"),[...ts].sort());
+}
+
+function renderQuestions(){
+  var dF=document.getElementById("filterDiff").value,mF=document.getElementById("filterMod").value,tF=document.getElementById("filterType").value,sF=document.getElementById("searchBox").value.toLowerCase();
+  var c=document.getElementById("questionList");c.innerHTML="";
+  DATA.forEach(function(q,qi){
+    var ev=q.eval||{};
+    if(dF&&(ev.difficulty||"")!==dF)return;
+    if(tF&&(ev.reasoning_type||"")!==tF)return;
+    if(mF){if(!(q.hops||[]).some(function(h){return(h.facts||[]).some(function(f){return f.modality===mF})}))return}
+    if(sF&&q.overarching_question.toLowerCase().indexOf(sF)<0&&q.question_id.indexOf(sF)<0)return;
+    var card=document.createElement("div");card.className="q-card";
+    var oa=ev.overarching||{};
+    var pills=CONDS.map(function(cc){return pill(cc,(oa[cc]||{}).judge_score)}).join("");
+    var nF=(q.hops||[]).reduce(function(s,h){return s+(h.facts||[]).length},0);
+    var mq=[...new Set((q.hops||[]).flatMap(function(h){return(h.facts||[]).map(function(f){return f.modality})}))];
+    var badges=(ev.difficulty?'<span class="badge badge-diff">'+esc(ev.difficulty)+'</span>':"")+(ev.reasoning_type?'<span class="badge badge-type">'+esc(ev.reasoning_type)+'</span>':"")+mq.map(function(m){return'<span class="badge badge-mod">'+esc(m)+'</span>'}).join("");
+    var hdr='<div class="q-header" onclick="toggleQ('+qi+')"><div><div class="q-id">#'+(qi+1)+' &middot; '+esc(q.question_id)+'</div><div class="q-text">'+esc(q.overarching_question)+'</div><div class="score-pills">'+pills+'</div></div><div style="text-align:right"><div class="q-badges">'+badges+'</div><div style="font-size:.8em;color:#999;margin-top:4px">'+(q.hops||[]).length+' hops &middot; '+nF+' facts</div><span class="chevron" id="chev'+qi+'">&#9654;</span></div></div>';
+    var bp=['<div class="gold-answer"><div class="label">Gold Answer</div>'+esc(q.gold_answer)+'</div>'];
+    if(ev.overarching){
+      var grid=CONDS.map(function(cc){var e=(ev.overarching||{})[cc]||{};return'<div class="eval-cell"><div class="cond">'+CL[cc]+'</div><div class="score" style="color:'+sc(e.judge_score)+'">'+((e.judge_score!==undefined)?e.judge_score.toFixed(2):"&mdash;")+'</div></div>'}).join("");
+      var det=CONDS.map(function(cc){var e=(ev.overarching||{})[cc]||{};return'<div class="cond-block"><div class="cond-name">'+CL[cc]+' ('+((e.judge_score!==undefined)?e.judge_score.toFixed(2):"?")+')</div><div class="cand-text">'+esc((e.candidate_answer||"").substring(0,600))+'</div><div class="reasoning">'+esc(e.judge_reasoning||"")+'</div></div>'}).join("");
+      bp.push('<div class="eval-section"><h4>Overarching Evaluation <span class="toggle-details" onclick="toggleDetail(\'oa_'+qi+'\')">show answers</span></h4><div class="eval-grid">'+grid+'</div><div class="candidate-detail" id="oa_'+qi+'">'+det+'</div></div>');
+    }
+    (q.hops||[]).forEach(function(hop,hi){
+      var he=(ev.hop_by_hop||[])[hi]||{};
+      var hp=CONDS.map(function(cc){return pill(cc,(he[cc]||{}).judge_score)}).join("");
+      var dep=(hop.depends_on_hops&&hop.depends_on_hops.length)?" (depends: "+hop.depends_on_hops.join(",")+")":"";
+      var rt=hop.hop_reasoning_type?" &mdash; "+esc(hop.hop_reasoning_type):"";
+      var hh='<div class="hop-section"><div class="hop-title"><span>Hop '+hop.hop_idx+esc(dep)+rt+'</span><div style="display:flex;gap:4px">'+hp+'</div></div>';
+      if(hop.sub_question)hh+='<div class="hop-sub">Q: '+esc(hop.sub_question)+'</div>';
+      if(hop.sub_answer)hh+='<div class="hop-answer"><span class="label">A: </span>'+esc(hop.sub_answer)+'</div>';
+      hh+='<span class="toggle-details" onclick="toggleDetail(\'hop_'+qi+'_'+hi+'\')">show model answers</span>';
+      var hd=CONDS.map(function(cc){var e=he[cc]||{};return'<div class="cond-block"><div class="cond-name">'+CL[cc]+' ('+((e.judge_score!==undefined)?e.judge_score.toFixed(2):"?")+')</div><div class="cand-text">'+esc((e.candidate_answer||"").substring(0,400))+'</div></div>'}).join("");
+      hh+='<div class="candidate-detail" id="hop_'+qi+'_'+hi+'">'+hd+'</div>';
+      (hop.facts||[]).forEach(function(fact){
+        var mc={text:"mod-text",figure:"mod-figure",table:"mod-table",equation:"mod-equation"}[fact.modality]||"mod-text";
+        var ae=(ev.atomic_facts||[]).find(function(af){return af.fact_id===fact.fact_id})||{};
+        var ap=CONDS.map(function(cc){return pill(cc,(ae[cc]||{}).judge_score)}).join("");
+        hh+='<div class="fact"><div class="fact-header"><span><span class="fact-mod '+mc+'">'+esc(fact.modality)+'</span> <span class="fact-id">'+esc(fact.fact_id)+'</span></span><span style="font-size:.78em;color:#999">'+esc((fact.paper_id||"").substring(0,8))+'&hellip; &middot; '+esc(fact.source_section||"")+'</span></div>';
+        hh+='<div class="fact-content">'+esc(fact.content||fact.statement||"")+'</div>';
+        if(ae.query)hh+='<div class="fact-source" style="margin-top:6px"><b>Auto QA:</b> '+esc(ae.query)+'</div>';
+        if(ae.gold_answer)hh+='<div class="fact-source"><b>Gold:</b> '+esc(ae.gold_answer)+'</div>';
+        hh+='<div style="display:flex;gap:4px;margin-top:4px">'+ap+'</div></div>';
+      });
+      hh+='</div>';
+      bp.push(hh);
+    });
+    card.innerHTML=hdr+'<div class="q-body" id="body'+qi+'">'+bp.join("")+'</div>';
+    c.appendChild(card);
+  });
+}
+
+function toggleQ(i){document.getElementById("body"+i).classList.toggle("open");document.getElementById("chev"+i).classList.toggle("open")}
+function toggleDetail(id){document.getElementById(id).classList.toggle("open")}
+
+renderSummary();populateFilters();renderQuestions();
+document.getElementById("filterDiff").addEventListener("change",renderQuestions);
+document.getElementById("filterMod").addEventListener("change",renderQuestions);
+document.getElementById("filterType").addEventListener("change",renderQuestions);
+document.getElementById("searchBox").addEventListener("input",renderQuestions);
+</script>
+</body>
+</html>

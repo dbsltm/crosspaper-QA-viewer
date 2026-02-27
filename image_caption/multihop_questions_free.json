@@ -1,0 +1,1061 @@
+[
+  {
+    "question_id": "9d9857ec3efc7940",
+    "overarching_question": "How does the EFUF method use CLIP scores and loss functions to improve hallucination detection in multimodal large language models, and what visual icon is used to represent the dataset in its conceptual figures?",
+    "gold_answer": "EFUF uses CLIP model scores to curate positive and negative examples for unlearning, enabling cost-effective identification of hallucinated versus real objects in MLLM outputs. The unlearning process employs sentence loss, positive loss, and negative loss to discard incorrect multimodal alignments causing hallucinations while preserving correct ones. In figures, a stylized icon of a database (three stacked cylindrical disks) is used to represent the dataset.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_fca8d34bf117"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_fca8d34bf117",
+            "source_id": "U_5d82f313b5e6",
+            "paper_id": "699320ac51ec",
+            "statement": "EFUF uses CLIP model scores to curate positive and negative examples for unlearning, enabling cost-effective and reliable identification of hallucinated versus real objects in MLLM outputs.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact captures the novel use of CLIP for dataset curation, which is a methodological innovation enabling the unlearning approach to function without manual annotation\u2014a key enabler for the proposed framework.",
+            "source_mode": "parsed",
+            "source_section": "page_2",
+            "source_text": "After ascertaining the capability of CLIP through a preliminary experiment, we curate our dataset manually-free by utilizing CLIP scores, before applying our unlearning-based method to MLLMs. ... The key to applying the unlearning algorithm is how to curate positive and negative samples, i.e., distinguish between real and hallucinated objects, in a manner that is both cost-effective and reliable. Intuitively, the similarity between objects and their corresponding images can act as an indicator for hallucinations, since the image contains real objects but not the hallucinated ones.",
+            "image_path": null,
+            "metadata": {},
+            "content": "EFUF uses CLIP model scores to curate positive and negative examples for unlearning, enabling cost-effective and reliable identification of hallucinated versus real objects in MLLM outputs."
+          }
+        ],
+        "sub_question": "How does EFUF use CLIP model scores in its workflow?",
+        "sub_answer": "EFUF uses CLIP model scores to curate positive and negative examples for unlearning, aiding in the identification of hallucinated versus real objects."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_ee1fa8ca41ef"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_ee1fa8ca41ef",
+            "source_id": "U_6000364c3110",
+            "paper_id": "699320ac51ec",
+            "statement": "The unlearning process in EFUF employs three distinct types of losses\u2014sentence loss, positive loss, and negative loss\u2014designed to help the model discard incorrect multimodal alignments that cause hallucinations while preserving correct alignments, and this process generally requires less computation than conventional alignment algorithms during finetuning.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact summarizes the core methodological innovation in the unlearning process, including the use of three losses and the computational efficiency claim, which are central to the paper's approach to mitigating multimodal hallucinations.",
+            "source_mode": "parsed",
+            "source_section": "page_5",
+            "source_text": "During the finetuning phase, we employ an efficient unlearning method, which involves the development of three distinct types of losses. These losses are designed to aid the model in discarding incorrect multimodal alignments that could lead to hallucinations, while preserving the correct alignments essential for tasks. Unlearning generally requires less computation resources compared with conventional alignment algorithms in the finetuning stage, so the computation amount can also be effectively reduced.",
+            "image_path": null,
+            "metadata": {},
+            "content": "The unlearning process in EFUF employs three distinct types of losses\u2014sentence loss, positive loss, and negative loss\u2014designed to help the model discard incorrect multimodal alignments that cause hallucinations while preserving correct alignments, and this process generally requires less computation than conventional alignment algorithms during finetuning."
+          }
+        ],
+        "sub_question": "What types of losses does EFUF employ in its unlearning process, and what is their purpose?",
+        "sub_answer": "EFUF employs sentence loss, positive loss, and negative loss to help the model discard incorrect multimodal alignments causing hallucinations while preserving correct alignments."
+      },
+      {
+        "hop_idx": 2,
+        "fact_ids": [
+          "F_de22a495819d"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_de22a495819d",
+            "source_id": "U_fc18bc830723",
+            "paper_id": "699320ac51ec",
+            "statement": "The figure uses a stylized icon of a database, represented by three stacked cylindrical disks, to visually indicate the concept of a dataset.",
+            "modality": "figure",
+            "difficulty": "easy",
+            "reasoning": "The image is a common visual metaphor for a dataset or database, which aligns with the caption's mention of 'dataset formation.'",
+            "source_mode": "parsed",
+            "source_section": "Figure_p5",
+            "source_text": "Figure 3: An overview of EFUF. EFUF is divided into two stages: dataset formation and unlearning process.",
+            "image_path": "outputs/parsed/699320ac51ec/figures/fig_007_p5.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The figure uses a stylized icon of a database, represented by three stacked cylindrical disks, to visually indicate the concept of a dataset."
+          }
+        ],
+        "sub_question": "What visual icon is used to represent the dataset in EFUF figures?",
+        "sub_answer": "A stylized icon of a database, represented by three stacked cylindrical disks, is used."
+      }
+    ],
+    "paper_ids": [
+      "699320ac51ec"
+    ],
+    "modalities": [
+      "text",
+      "figure"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "synthesis",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "453ff6af5c6f3776",
+    "overarching_question": "How does the FAITHSCORE metric pipeline identify and verify hallucinations in multimodal model answers, and what are the specific roles of the Recognizer, Decomposer, and Verifier modules in this process?",
+    "gold_answer": "The FAITHSCORE metric pipeline identifies hallucinations by first using the Recognizer module to identify descriptive sub-sentences in the model's answer, then the Decomposer module generates atomic facts from these sub-sentences, and finally the Verifier module checks these atomic facts against the input image to verify their faithfulness. Each module implements one of the three main steps: Recognizer (Descriptive Sub-sentence Identification), Decomposer (Atomic Fact Generation), and Verifier (Fact Verification).",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_77d501d3c2fa"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_77d501d3c2fa",
+            "source_id": "U_9ef9baa01e7f",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The FAITHSCORE metric is proposed to evaluate fine-grained hallucinations in LVLMs' free-form answers by identifying descriptive sub-sentences, generating atomic facts, and verifying these facts with a Visual Entailment Model.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact encapsulates the novel methodological contribution of the paper, detailing the structure and purpose of the FAITHSCORE metric, which is central to the paper's core contribution.",
+            "source_mode": "parsed",
+            "source_section": "page_2",
+            "source_text": "To address the aforementioned challenges, we propose the FAITHSCORE metric, which can evaluate fine-grained hallucinations in various multimodal tasks, such as image captioning and open-ended questions. This metric comprises three primary components: Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification, as illustrated in Figure 2. ... The last component emphasizes verifying the consistency between the visual information and the derived atomic facts via a Visual Entailment Model (VEM) (Xie et al., 2019).",
+            "image_path": null,
+            "metadata": {},
+            "content": "The FAITHSCORE metric is proposed to evaluate fine-grained hallucinations in LVLMs' free-form answers by identifying descriptive sub-sentences, generating atomic facts, and verifying these facts with a Visual Entailment Model."
+          }
+        ],
+        "sub_question": "What is the FAITHSCORE metric designed to evaluate and what are its main steps?",
+        "sub_answer": "FAITHSCORE evaluates fine-grained hallucinations in LVLMs' free-form answers by identifying descriptive sub-sentences, generating atomic facts, and verifying these facts with a Visual Entailment Model."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_2bfc8e2633af"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_2bfc8e2633af",
+            "source_id": "U_fe912f2d731c",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The three steps of estimating FAITHSCORE are implemented by three modules: Recognizer, Decomposer, and Verifier.",
+            "modality": "text",
+            "difficulty": "easy",
+            "reasoning": "This fact is explicitly stated in the caption and links the steps to their respective modules.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p4",
+            "source_text": "These steps are implemented by three modules: Recognizer, Decomposer, and Verifier.",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_003_p4.png",
+            "metadata": {},
+            "content": "The three steps of estimating FAITHSCORE are implemented by three modules: Recognizer, Decomposer, and Verifier."
+          }
+        ],
+        "sub_question": "Which modules implement the three steps of FAITHSCORE estimation?",
+        "sub_answer": "Recognizer, Decomposer, and Verifier modules."
+      },
+      {
+        "hop_idx": 2,
+        "fact_ids": [
+          "F_0acd3b08e676",
+          "F_7871426facd6",
+          "F_eee7326e1e45"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_0acd3b08e676",
+            "source_id": "U_fe912f2d731c",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The Recognizer module is responsible for Descriptive Sub-sentence Identification in the FAITHSCORE estimation pipeline.",
+            "modality": "figure",
+            "difficulty": "medium",
+            "reasoning": "The caption links each step to a module, and the image visually associates Recognizer with the first step, clarifying its specific function.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p4",
+            "source_text": "Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification. These steps are implemented by three modules: Recognizer, Decomposer, and Verifier.",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_016_p4.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The Recognizer module is responsible for Descriptive Sub-sentence Identification in the FAITHSCORE estimation pipeline."
+          },
+          {
+            "fact_id": "F_7871426facd6",
+            "source_id": "U_fe912f2d731c",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The 'Decomposer' module is visually represented by a robot icon and a blue label in the overview diagram for estimating FAITHSCORE.",
+            "modality": "figure",
+            "difficulty": "easy",
+            "reasoning": "This fact identifies the visual representation of the Decomposer module in the figure, which is important for understanding the mapping between the diagram and the described process.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p4",
+            "source_text": "These steps are implemented by three modules: Recognizer, Decomposer, and Verifier.",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_009_p4.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The 'Decomposer' module is visually represented by a robot icon and a blue label in the overview diagram for estimating FAITHSCORE."
+          },
+          {
+            "fact_id": "F_eee7326e1e45",
+            "source_id": "U_fe912f2d731c",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The Verifier (VEM) is one of the three modules used in the process of estimating FAITHSCORE, as depicted in Figure 2.",
+            "modality": "text",
+            "difficulty": "easy",
+            "reasoning": "The image clearly labels 'Verifier (VEM)' as a module, and the caption confirms it is one of three modules in the FAITHSCORE estimation process.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p4",
+            "source_text": "These steps are implemented by three modules: Recognizer, Decomposer, and Verifier.",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_007_p4.png",
+            "metadata": {},
+            "content": "The Verifier (VEM) is one of the three modules used in the process of estimating FAITHSCORE, as depicted in Figure 2."
+          }
+        ],
+        "sub_question": "What are the specific roles of the Recognizer, Decomposer, and Verifier modules in the FAITHSCORE pipeline?",
+        "sub_answer": "Recognizer is responsible for Descriptive Sub-sentence Identification, Decomposer for Atomic Fact Generation, and Verifier (VEM) for Fact Verification."
+      }
+    ],
+    "paper_ids": [
+      "d2cdaabd9749"
+    ],
+    "modalities": [
+      "text",
+      "figure"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "synthesis",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "5767dea92972a270",
+    "overarching_question": "When evaluating object hallucination in multimodal large language models, how does the EFUF method use CLIP scores in dataset formation, and what visual icon is used to represent this process?",
+    "gold_answer": "In the EFUF method, objects are extracted from generated captions and their image relevance is calculated using CLIP scores during dataset formation. This process is visually represented by a stylized icon of a database (three stacked cylindrical disks) in the figures.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_45390a4446d0",
+          "F_cf4e3093daec"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_45390a4446d0",
+            "source_id": "U_fc18bc830723",
+            "paper_id": "699320ac51ec",
+            "statement": "In the dataset formation stage of EFUF, objects are extracted from generated captions and their image relevance is calculated using CLIP.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact requires understanding the specific steps involved in the dataset formation stage, as described in the caption.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p5",
+            "source_text": "Initially, we extract objects from generated captions and calculate their image relevance utilizing CLIP...",
+            "image_path": "outputs/parsed/699320ac51ec/figures/fig_014_p5.jpeg",
+            "metadata": {},
+            "content": "In the dataset formation stage of EFUF, objects are extracted from generated captions and their image relevance is calculated using CLIP."
+          },
+          {
+            "fact_id": "F_cf4e3093daec",
+            "source_id": "U_fc18bc830723",
+            "paper_id": "699320ac51ec",
+            "statement": "The object 'landing gear' is extracted as part of the dataset formation stage in the EFUF method, and its image relevance is evaluated using a CLIP score.",
+            "modality": "text",
+            "difficulty": "easy",
+            "reasoning": "The figure shows 'landing gear' as an extracted object, and the caption explains that objects are extracted and evaluated for image relevance using CLIP. This is a direct, standalone fact about the method's process.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p5",
+            "source_text": "landing gear",
+            "image_path": "outputs/parsed/699320ac51ec/figures/fig_012_p5.png",
+            "metadata": {},
+            "content": "The object 'landing gear' is extracted as part of the dataset formation stage in the EFUF method, and its image relevance is evaluated using a CLIP score."
+          }
+        ],
+        "sub_question": "How does EFUF use CLIP scores in dataset formation?",
+        "sub_answer": "EFUF extracts objects from generated captions and evaluates their image relevance using CLIP scores."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_ac346a745f49",
+          "F_de22a495819d",
+          "F_2c64ba5cb85e"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_ac346a745f49",
+            "source_id": "U_fc18bc830723",
+            "paper_id": "699320ac51ec",
+            "statement": "The figure uses a stylized icon of a database to visually represent the concept of a dataset in the context of the EFUF method.",
+            "modality": "figure",
+            "difficulty": "easy",
+            "reasoning": "The image is a common visual metaphor for a dataset or database, which aligns with the caption's reference to dataset formation.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p5",
+            "source_text": "Figure 3: An overview of EFUF. EFUF is divided into two stages: dataset formation and unlearning process.",
+            "image_path": "outputs/parsed/699320ac51ec/figures/fig_008_p5.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The figure uses a stylized icon of a database to visually represent the concept of a dataset in the context of the EFUF method."
+          },
+          {
+            "fact_id": "F_de22a495819d",
+            "source_id": "U_fc18bc830723",
+            "paper_id": "699320ac51ec",
+            "statement": "The figure uses a stylized icon of a database, represented by three stacked cylindrical disks, to visually indicate the concept of a dataset.",
+            "modality": "figure",
+            "difficulty": "easy",
+            "reasoning": "The image is a common visual metaphor for a dataset or database, which aligns with the caption's mention of 'dataset formation.'",
+            "source_mode": "parsed",
+            "source_section": "Figure_p5",
+            "source_text": "Figure 3: An overview of EFUF. EFUF is divided into two stages: dataset formation and unlearning process.",
+            "image_path": "outputs/parsed/699320ac51ec/figures/fig_007_p5.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The figure uses a stylized icon of a database, represented by three stacked cylindrical disks, to visually indicate the concept of a dataset."
+          },
+          {
+            "fact_id": "F_2c64ba5cb85e",
+            "source_id": "U_fc18bc830723",
+            "paper_id": "699320ac51ec",
+            "statement": "Figure 3 visually represents a database or data storage system, as indicated by the icon of stacked disks.",
+            "modality": "figure",
+            "difficulty": "easy",
+            "reasoning": "The icon shown is a widely recognized symbol for databases or data storage, which aligns with the caption's mention of dataset formation.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p5",
+            "source_text": "Figure 3: An overview of EFUF. EFUF is divided into two stages: dataset formation and unlearning process.",
+            "image_path": "outputs/parsed/699320ac51ec/figures/fig_009_p5.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "Figure 3 visually represents a database or data storage system, as indicated by the icon of stacked disks."
+          }
+        ],
+        "sub_question": "What visual icon is used to represent the dataset formation process in EFUF?",
+        "sub_answer": "A stylized icon of a database, depicted as three stacked cylindrical disks."
+      }
+    ],
+    "paper_ids": [
+      "699320ac51ec"
+    ],
+    "modalities": [
+      "text",
+      "figure"
+    ],
+    "difficulty": "easy",
+    "reasoning_type": "synthesis",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "fb3c81caded80265",
+    "overarching_question": "How does the AUTO HALLUSION framework manipulate images to induce hallucinations, and what are the three main manipulation strategies it employs?",
+    "gold_answer": "The AUTO HALLUSION framework manipulates images after probing the language prior of the victim LVLM by applying three main manipulation strategies: abnormal object insertion, paired objects insertion, and correlated object removal.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_895ad172e25e"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_895ad172e25e",
+            "source_id": "U_1f029b478b85",
+            "paper_id": "8922e6cfed54",
+            "statement": "The figure illustrates three distinct image manipulation strategies: abnormal object insertion, paired objects insertion, and correlated object removal.",
+            "modality": "text",
+            "difficulty": "easy",
+            "reasoning": "This fact is directly stated in both the figure's caption and the left column of the image, making it a simple identification of the three strategies.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p1",
+            "source_text": "We propose three image manipulation strategies to induce hallucinations: abnormal object insertion, paired object insertion, and correlated object removal...",
+            "image_path": "outputs/parsed/8922e6cfed54/figures/fig_001_p1.png",
+            "metadata": {},
+            "content": "The figure illustrates three distinct image manipulation strategies: abnormal object insertion, paired objects insertion, and correlated object removal."
+          }
+        ],
+        "sub_question": "What are the three main manipulation strategies illustrated in the AUTO HALLUSION framework?",
+        "sub_answer": "Abnormal object insertion, paired objects insertion, and correlated object removal."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_cdc6edc10849"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_cdc6edc10849",
+            "source_id": "U_ea544e00ad28",
+            "paper_id": "8922e6cfed54",
+            "statement": "The manipulation strategies in AUTO HALLUSION are applied after probing the language prior of the victim LVLM and before hallucination detection.",
+            "modality": "text",
+            "difficulty": "easy",
+            "reasoning": "The figure's flow and color coding (yellow) indicate the sequential order of these steps.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p4",
+            "source_text": "After that, we use text to probe the language prior of the victim LVLM and then propose three manipulation strategies to induce hallucination in scene images(yellow).",
+            "image_path": "outputs/parsed/8922e6cfed54/figures/fig_006_p4.jpeg",
+            "metadata": {},
+            "content": "The manipulation strategies in AUTO HALLUSION are applied after probing the language prior of the victim LVLM and before hallucination detection."
+          }
+        ],
+        "sub_question": "When are these manipulation strategies applied in the AUTO HALLUSION pipeline?",
+        "sub_answer": "After probing the language prior of the victim LVLM and before hallucination detection."
+      },
+      {
+        "hop_idx": 2,
+        "fact_ids": [
+          "F_7ed35633a7bc"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_7ed35633a7bc",
+            "source_id": "U_ea544e00ad28",
+            "paper_id": "8922e6cfed54",
+            "statement": "The figure visually represents the workflow of the AUTO HALLUSION method, which consists of four main stages: automatic generation of scenes and objects sets, probing the language prior of the victim LVLM, applying three manipulation strategies, and using two metrics for hallucination detection.",
+            "modality": "figure",
+            "difficulty": "easy",
+            "reasoning": "This fact summarizes the overall pipeline as depicted in the figure, integrating both the caption and the visual flowchart.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p4",
+            "source_text": "We first automatically generate the scenes set and objects set (pink). After that, we use text to probe the language prior of the victim LVLM and then propose three manipulation strategies to induce hallucination in scene images(yellow). We finally use two metrics to detect hallucinations (blue).",
+            "image_path": "outputs/parsed/8922e6cfed54/figures/fig_007_p4.jpeg",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The figure visually represents the workflow of the AUTO HALLUSION method, which consists of four main stages: automatic generation of scenes and objects sets, probing the language prior of the victim LVLM, applying three manipulation strategies, and using two metrics for hallucination detection."
+          }
+        ],
+        "sub_question": "What are the main stages in the AUTO HALLUSION workflow?",
+        "sub_answer": "Automatic generation of scenes and object sets, probing the language prior, applying manipulation strategies, and hallucination detection."
+      }
+    ],
+    "paper_ids": [
+      "8922e6cfed54"
+    ],
+    "modalities": [
+      "text",
+      "figure"
+    ],
+    "difficulty": "easy",
+    "reasoning_type": "lookup",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "6a97f65d5af49284",
+    "overarching_question": "What is the difference in hallucination detection performance between GPT-4V-Turbo and Claude 3 on the Correlated Object Removal manipulation strategy, and which model achieves a perfect score on the same synthetic dataset?",
+    "gold_answer": "On the Correlated Object Removal manipulation strategy, GPT-4V-Turbo has a lower Overall MASR of 55.2% compared to Claude 3's 74.6%. When using the same synthetic dataset, Claude 3 achieves a perfect 100.0% Overall ASR, outperforming all other LVLMs.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_c8d0effb6ce7"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_c8d0effb6ce7",
+            "source_id": "U_d5ef126e78c0",
+            "paper_id": "8922e6cfed54",
+            "statement": "For the Correlated Object Removal manipulation strategy on the COCO dataset, GPT-4V-Turbo shows a substantially lower Overall MASR (Manipulation Attack Success Rate) of 55.2% compared to Claude 3's 74.6%, indicating a significant performance gap between these models under this attack.",
+            "modality": "table",
+            "difficulty": "medium",
+            "reasoning": "This fact highlights a notable quantitative difference in model vulnerability to a specific manipulation, providing insight into the relative robustness of GPT-4V-Turbo and Claude 3, which is central to the paper's comparative analysis.",
+            "source_mode": "parsed",
+            "source_section": "page_15",
+            "source_text": "Correlated Obj. Removal GPT-4V-Turbo ( Yang et al. ,  2023 ) 94.4 88.0 84.0 75.2 72.8 55.2 85.4 73.4 81.5 ... Claude 3 ( Team ,  2024 ) 98.4 98.4 94.4 96.0 95.2 74.6 89.6 88.0 88.8",
+            "image_path": null,
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "For the Correlated Object Removal manipulation strategy on the COCO dataset, GPT-4V-Turbo shows a substantially lower Overall MASR (Manipulation Attack Success Rate) of 55.2% compared to Claude 3's 74.6%, indicating a significant performance gap between these models under this attack."
+          }
+        ],
+        "sub_question": "What are the MASR scores for GPT-4V-Turbo and Claude 3 on Correlated Object Removal?",
+        "sub_answer": "GPT-4V-Turbo: 55.2%, Claude 3: 74.6%."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_11cece0a4735"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_11cece0a4735",
+            "source_id": "U_bc2f7d56af5d",
+            "paper_id": "8922e6cfed54",
+            "statement": "When using the same synthetic dataset created by GPT-4V-Turbo and DALL-E-3, Claude 3 achieves a perfect 100.0% Overall ASR for Correlated Object Removal, outperforming all other LVLMs, including Gemini Pro Vision (97.0%), LLaVA-1.5 (98.1%), miniGPT4 (97.9%), and GPT-4V-Turbo (93.0%).",
+            "modality": "table",
+            "difficulty": "medium",
+            "reasoning": "This fact requires interpreting comparative results across multiple models and manipulation strategies, identifying a standout performance that is relevant for researchers assessing model vulnerabilities.",
+            "source_mode": "parsed",
+            "source_section": "page_14",
+            "source_text": "Correlated Obj. Removal ... Claude 3 ( Team ,  2024 ) 100.0 ... Gemini Pro Vision ( Team ,  2023 ) 97.0 ... LLaVA-1.5 ( Liu et al. ,  2023c ) 98.1 ... miniGPT4 ( Zhu et al. ,  2023 ) 97.9 ... GPT-4V-Turbo ( Yang et al. ,  2023 ) 93.0 ... Table 7:   Attack Results across all LVLMs with three manipulation strategies using the same synthetic dataset.",
+            "image_path": null,
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "When using the same synthetic dataset created by GPT-4V-Turbo and DALL-E-3, Claude 3 achieves a perfect 100.0% Overall ASR for Correlated Object Removal, outperforming all other LVLMs, including Gemini Pro Vision (97.0%), LLaVA-1.5 (98.1%), miniGPT4 (97.9%), and GPT-4V-Turbo (93.0%)."
+          }
+        ],
+        "sub_question": "Which model achieves a perfect 100.0% Overall ASR on the same synthetic dataset?",
+        "sub_answer": "Claude 3."
+      }
+    ],
+    "paper_ids": [
+      "8922e6cfed54"
+    ],
+    "modalities": [
+      "table"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "comparison",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "520eca4c7abc8cca",
+    "overarching_question": "In the context of model evaluation, how does the FAITHSCORE metric's performance on the LLaVA-1k dataset compare to the COCO-Cap dataset across models, and which models achieve the highest scores on LLaVA-1k?",
+    "gold_answer": "The FAITHSCORE metric yields consistently higher scores on the LLaVA-1k dataset than on the COCO-Cap dataset across all evaluated models. On LLaVA-1k, closed-source models GPT-4V and Gemini achieve the highest scores (0.8788 and 0.8865, respectively), outperforming all tested open-source models.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_92fc5f8f0f29"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_92fc5f8f0f29",
+            "source_id": "U_91ebac9090b2",
+            "paper_id": "d2cdaabd9749",
+            "statement": "On the F AITH - S CORE metric, the LLaVA-1k dataset consistently yields higher scores than the COCO-Cap dataset across all evaluated models.",
+            "modality": "figure",
+            "difficulty": "medium",
+            "reasoning": "This fact synthesizes the trend visible in the bar heights for each pair, showing that LLaVA-1k bars are always taller than their COCO-Cap counterparts, indicating higher scores.",
+            "source_mode": "parsed",
+            "source_section": "Table_p7",
+            "source_text": "Table   4   presents   a   comprehensive   performance comparison of various models in terms of F AITH - S CORE  when benchmarked on the LLaVA-1k and MSCOCO-Cap   datasets.",
+            "image_path": "outputs/parsed/d2cdaabd9749/tables/tab_001_p7.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "On the F AITH - S CORE metric, the LLaVA-1k dataset consistently yields higher scores than the COCO-Cap dataset across all evaluated models."
+          }
+        ],
+        "sub_question": "How does FAITHSCORE performance on LLaVA-1k compare to COCO-Cap across models?",
+        "sub_answer": "LLaVA-1k yields higher FAITHSCOREs than COCO-Cap for all evaluated models."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_7d9883e593ab"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_7d9883e593ab",
+            "source_id": "U_ce026cbcf523",
+            "paper_id": "d2cdaabd9749",
+            "statement": "Closed-source models GPT-4V and Gemini achieve higher performance than all tested open-source models on the LLaVA-1k benchmark, with Gemini achieving a score of 0.8865 and GPT-4V achieving 0.8788, compared to the best open-source model LLaVA-1.5 at 0.8566.",
+            "modality": "table",
+            "difficulty": "medium",
+            "reasoning": "This fact quantitatively compares the performance of closed-source and open-source models on a specific benchmark, which is central to understanding the paper's evaluation of model capabilities.",
+            "source_mode": "parsed",
+            "source_section": "page_14",
+            "source_text": "The results are shown in Table 10. The results show the closed-source models surpass the existing open-source model... Model LLaVA-1k Multimodal-GPT 0.5335 LLaVA 0.8360 MiniGPT-4 0.5713 LLaVA-1.5 0.8566 mPLUG-Owl 0.7167 GPT-4V 0.8788 InstructBLIP 0.8091 Gemini 0.8865 Table 10: Model performance on LLaVA-1k benchmark.",
+            "image_path": null,
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "Closed-source models GPT-4V and Gemini achieve higher performance than all tested open-source models on the LLaVA-1k benchmark, with Gemini achieving a score of 0.8865 and GPT-4V achieving 0.8788, compared to the best open-source model LLaVA-1.5 at 0.8566."
+          }
+        ],
+        "sub_question": "Which models achieve the highest FAITHSCOREs on LLaVA-1k?",
+        "sub_answer": "Gemini (0.8865) and GPT-4V (0.8788)."
+      }
+    ],
+    "paper_ids": [
+      "d2cdaabd9749"
+    ],
+    "modalities": [
+      "table",
+      "figure"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "comparison",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "3b9cdf7423a68bdc",
+    "overarching_question": "What is the effect of adding the EFUF method to the LRV model on hallucination rate and Bleu4 score, and how does this relate to the use of fine-grained unlearning strategies in multimodal large language models?",
+    "gold_answer": "Adding the EFUF method to the LRV model reduces the hallucination rate from 39.4% to 37.3% and improves the Bleu4 score from 20.5 to 20.7. This demonstrates that fine-grained unlearning strategies, as used in EFUF, help reduce hallucinated objects in outputs and improve evaluation metrics.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_188b1ad581fa"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_188b1ad581fa",
+            "source_id": "U_774eddf7c74b",
+            "paper_id": "699320ac51ec",
+            "statement": "Adding the EFUF method to the LRV model reduces the hallucination rate from 39.4% to 37.3% and improves Bleu4 score from 20.5 to 20.7 on the evaluated dataset.",
+            "modality": "table",
+            "difficulty": "medium",
+            "reasoning": "This fact quantitatively demonstrates the impact of the EFUF method when combined with an existing hallucination mitigation approach (LRV), showing both a reduction in hallucination rate and a slight improvement in generation quality (Bleu4). This is central to understanding the effectiveness of EFUF.",
+            "source_mode": "parsed",
+            "source_section": "page_14",
+            "source_text": "LRV 39.4 19.9 46.0 16.0 85.1 51.8 36.6 20.5 88.4 0.129 +  EFUF 37.3 19.5 45.0 15.1 85.1 51.2 36.3 20.7 87.7 0.118 Table 6:   Performance comparison of EFUF added on other hallucination mitigating approaches (%).",
+            "image_path": null,
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "Adding the EFUF method to the LRV model reduces the hallucination rate from 39.4% to 37.3% and improves Bleu4 score from 20.5 to 20.7 on the evaluated dataset."
+          }
+        ],
+        "sub_question": "What is the quantitative effect of adding EFUF to LRV on hallucination rate and Bleu4 score?",
+        "sub_answer": "Hallucination rate drops from 39.4% to 37.3%; Bleu4 increases from 20.5 to 20.7."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_f74f1b40a62d"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_f74f1b40a62d",
+            "source_id": "U_774eddf7c74b",
+            "paper_id": "699320ac51ec",
+            "statement": "The EFUF approach, by integrating a fine-grained unlearning strategy, enables the model to avoid generating hallucinated objects in outputs, outperforming both the baseline MiniGPT4 and the sentence-loss-only method in a case study scenario.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact captures the core methodological contribution of EFUF\u2014its explicit unlearning mechanism to reduce hallucinations\u2014highlighted through a comparative case study. It is essential for understanding how EFUF differs from and improves upon prior methods.",
+            "source_mode": "parsed",
+            "source_section": "page_14",
+            "source_text": "In   contrast,   our   EFUF   approach   successfully addresses   this   challenge.   By   integrating   a   fine- grained unlearning strategy, EFUF effectively dis- courages   the   generation   of   objects   with   low   rel- evance   to   the   given   image.   This   direct   interven- tion   ensures   that   the   model   refrains   from   includ- ing hallucinated objects in its outputs, showcasing a   significant   improvement   over   the   baseline   and sentence-loss-only method.",
+            "image_path": null,
+            "metadata": {},
+            "content": "The EFUF approach, by integrating a fine-grained unlearning strategy, enables the model to avoid generating hallucinated objects in outputs, outperforming both the baseline MiniGPT4 and the sentence-loss-only method in a case study scenario."
+          }
+        ],
+        "sub_question": "How does the EFUF approach, with fine-grained unlearning, affect model outputs?",
+        "sub_answer": "It enables the model to avoid generating hallucinated objects, outperforming baseline and sentence-loss-only methods."
+      }
+    ],
+    "paper_ids": [
+      "699320ac51ec"
+    ],
+    "modalities": [
+      "table",
+      "text"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "causal",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "6d76776212bf76e6",
+    "overarching_question": "Describe a failure case where LVLMs struggle to detect an inserted object in a visually complex scene, citing a specific example and the type of scene involved.",
+    "gold_answer": "A failure case occurs in a food scene with multiple items, such as a layered cake and a tall glass of iced beverage with whipped cream (Figure 13), where the evaluation model fails to correctly interpret or assess the scenario. The visually complex scene, which includes children and animals in a petting zoo-like environment, makes it difficult for the LVLM to detect the manipulated or inserted object.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_c9da53a8694d"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_c9da53a8694d",
+            "source_id": "U_e1aeffd0daa7",
+            "paper_id": "8922e6cfed54",
+            "statement": "The failure case in Figure 13 involves a food scene with multiple items, including a layered cake and a tall glass of iced beverage topped with whipped cream, suggesting that the evaluation model may struggle with multi-item or visually complex food scenes.",
+            "modality": "figure",
+            "difficulty": "medium",
+            "reasoning": "This fact synthesizes the visual complexity of the scene (multiple food items) with the failure context provided by the caption, implying a potential reason for the model's failure.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p25",
+            "source_text": "Figure 13: Failure Case: When Evaluation Model Fails.",
+            "image_path": "outputs/parsed/8922e6cfed54/figures/fig_033_p25.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The failure case in Figure 13 involves a food scene with multiple items, including a layered cake and a tall glass of iced beverage topped with whipped cream, suggesting that the evaluation model may struggle with multi-item or visually complex food scenes."
+          }
+        ],
+        "sub_question": "What does Figure 13 illustrate about LVLM performance in food scenes?",
+        "sub_answer": "LVLMs may struggle with multi-item or visually complex food scenes."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_ebf804c670b5"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_ebf804c670b5",
+            "source_id": "U_e1aeffd0daa7",
+            "paper_id": "8922e6cfed54",
+            "statement": "The evaluation model failed to correctly interpret or assess the scenario depicted in Figure 13, which involves children and animals in a petting zoo-like environment.",
+            "modality": "figure",
+            "difficulty": "medium",
+            "reasoning": "This fact synthesizes the caption's statement about model failure with the specific scenario shown in the image, indicating the type of content that caused the failure.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p25",
+            "source_text": "Failure Case: When Evaluation Model Fails.",
+            "image_path": "outputs/parsed/8922e6cfed54/figures/fig_031_p25.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The evaluation model failed to correctly interpret or assess the scenario depicted in Figure 13, which involves children and animals in a petting zoo-like environment."
+          }
+        ],
+        "sub_question": "What does manual inspection reveal about the evaluation model's performance in Figure 13?",
+        "sub_answer": "The model failed to correctly interpret or assess the scenario involving children and animals in a petting zoo-like environment."
+      },
+      {
+        "hop_idx": 2,
+        "fact_ids": [
+          "F_3ad4abc75bf0"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_3ad4abc75bf0",
+            "source_id": "U_e1aeffd0daa7",
+            "paper_id": "8922e6cfed54",
+            "statement": "Despite the presence of the microwave, the rest of the image in Figure 13 appears contextually consistent, with children interacting with goats in a fenced outdoor area.",
+            "modality": "figure",
+            "difficulty": "medium",
+            "reasoning": "This fact highlights that the failure is localized to the microwave insertion, while the rest of the image is coherent, which is relevant for understanding the type of model error.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p25",
+            "source_text": "Failure Case: When Evaluation Model Fails.",
+            "image_path": "outputs/parsed/8922e6cfed54/figures/fig_032_p25.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "Despite the presence of the microwave, the rest of the image in Figure 13 appears contextually consistent, with children interacting with goats in a fenced outdoor area."
+          }
+        ],
+        "sub_question": "What is the context of the rest of the image in Figure 13?",
+        "sub_answer": "The rest of the image appears contextually consistent, with children interacting with goats in a fenced outdoor area."
+      }
+    ],
+    "paper_ids": [
+      "8922e6cfed54"
+    ],
+    "modalities": [
+      "figure"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "synthesis",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "807763b7d8544c6e",
+    "overarching_question": "How does the annotation procedure for atomic facts in the FAITHSCORE framework ensure that only relevant and atomic elements are included, and what categories are used for fact extraction?",
+    "gold_answer": "The annotation procedure requires annotators to check whether each element is reasonable according to the sub-sentence and to remove or rephrase elements that are not atomic or do not appear in the sub-sentence. For fact extraction, categories such as object, relation, human, animal, food, attribute, counting, color, material, spatial, location, shape, or other are used.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_d9242ac85949"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_d9242ac85949",
+            "source_id": "U_ff768c577097",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The annotation procedure requires annotators to check whether each element is reasonable according to the sub-sentence and to remove or rephrase elements that are not atomic or do not appear in the sub-sentence.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This describes a multi-step, conditional process for validating atomic elements, requiring understanding of both the sub-sentence and atomicity.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p20",
+            "source_text": "Check whether each element is reasonable according to the sub-sentence. If the element is repeated or doesn\u2019t appear in the corresponding sub-sentence, click \u201cremove\u201d to delete it. If the element is not atomic, click the \u201cremove\u201d to delete it. Check whether the element is a natural sentence or the sentence correctly describes the element/entity. If not, please rephrase/revise them.",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_027_p20.png",
+            "metadata": {},
+            "content": "The annotation procedure requires annotators to check whether each element is reasonable according to the sub-sentence and to remove or rephrase elements that are not atomic or do not appear in the sub-sentence."
+          }
+        ],
+        "sub_question": "How does the annotation procedure ensure only relevant and atomic elements are included?",
+        "sub_answer": "Annotators check each element for reasonableness and atomicity, removing or rephrasing those that are not atomic or do not appear in the sub-sentence."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_1858c1e14aa8"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_1858c1e14aa8",
+            "source_id": "U_0714247d1c55",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The prompt shown in Figure 16 instructs ChatGPT to extract atomic facts from vision-language model answers by categorizing elements into object, relation, human, animal, food, attribute, counting, color, material, spatial, location, shape, or other.",
+            "modality": "text",
+            "difficulty": "easy",
+            "reasoning": "This is a direct instruction from the prompt, showing the categorization process required for atomic fact extraction.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p22",
+            "source_text": "First extract elements from the answer. Then classify each element into a category (object, relation, human, animal, food, attribute, counting, color, material, spatial, location, shape, other).",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_029_p22.png",
+            "metadata": {},
+            "content": "The prompt shown in Figure 16 instructs ChatGPT to extract atomic facts from vision-language model answers by categorizing elements into object, relation, human, animal, food, attribute, counting, color, material, spatial, location, shape, or other."
+          }
+        ],
+        "sub_question": "What categories are used for atomic fact extraction?",
+        "sub_answer": "Object, relation, human, animal, food, attribute, counting, color, material, spatial, location, shape, or other."
+      }
+    ],
+    "paper_ids": [
+      "d2cdaabd9749"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "synthesis",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "f6cf9de723e6dea4",
+    "overarching_question": "How does the FAITHSCORE metric's correlation with human judgment on LVLM hallucinations compare to other metrics, and what are the three sequential steps involved in its estimation process?",
+    "gold_answer": "FAITHSCORE achieves the highest correlation with human judgment on LVLM hallucinations (Pearson\u2019s r = 48.17%, Spearman\u2019s \u03c1 = 38.44%, Kendall\u2019s \u03c4 = 47.61%) on the LLaVA dataset, outperforming CHAIR, CLIP-Score, and traditional reference-based metrics. Its estimation process involves three sequential steps: Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_6a93733761f1"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_6a93733761f1",
+            "source_id": "U_3a70327a6198",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The FAITHSCORE metric achieves the highest correlation with human judgment on LVLM hallucinations, with Pearson\u2019s r = 48.17%, Spearman\u2019s \u03c1 = 38.44%, and Kendall\u2019s \u03c4 = 47.61% on the LLaVA dataset, outperforming all other evaluated metrics including CHAIR, CLIP-Score, and traditional reference-based metrics.",
+            "modality": "table",
+            "difficulty": "medium",
+            "reasoning": "This fact quantitatively compares the new metric (FAITHSCORE) to existing ones, showing its superior alignment with human judgment, which is central to the paper's contribution.",
+            "source_mode": "parsed",
+            "source_section": "page_13",
+            "source_text": "Ours 48.17 38.44 47.61 Table 7: Correlation between each evaluation metric and human judgment on LVLM hallucinations, measured by Pearson\u2019s  r , Spearman\u2019s  \u03c1 , and Kendall\u2019s  \u03c4 . ... Amid the varied metrics landscape, our metric F AITH S CORE  achieved best correlation with human correlation.",
+            "image_path": null,
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "The FAITHSCORE metric achieves the highest correlation with human judgment on LVLM hallucinations, with Pearson\u2019s r = 48.17%, Spearman\u2019s \u03c1 = 38.44%, and Kendall\u2019s \u03c4 = 47.61% on the LLaVA dataset, outperforming all other evaluated metrics including CHAIR, CLIP-Score, and traditional reference-based metrics."
+          }
+        ],
+        "sub_question": "What is the correlation of FAITHSCORE with human judgment on LVLM hallucinations, and how does it compare to other evaluated metrics?",
+        "sub_answer": "FAITHSCORE achieves the highest correlation with human judgment (Pearson\u2019s r = 48.17%, Spearman\u2019s \u03c1 = 38.44%, Kendall\u2019s \u03c4 = 47.61%) on the LLaVA dataset, outperforming CHAIR, CLIP-Score, and traditional reference-based metrics."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_16e638dcddc3"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_16e638dcddc3",
+            "source_id": "U_fe912f2d731c",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The process of estimating FAITHSCORE involves three sequential steps: Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification.",
+            "modality": "text",
+            "difficulty": "easy",
+            "reasoning": "This fact is directly stated in the caption and is a basic description of the process shown in the figure.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p4",
+            "source_text": "Figure 2: An overview of estimating FAITHSCORE, which mainly consists of three steps: Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification.",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_005_p4.png",
+            "metadata": {},
+            "content": "The process of estimating FAITHSCORE involves three sequential steps: Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification."
+          }
+        ],
+        "sub_question": "What are the three sequential steps involved in estimating FAITHSCORE?",
+        "sub_answer": "Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification."
+      }
+    ],
+    "paper_ids": [
+      "d2cdaabd9749"
+    ],
+    "modalities": [
+      "table",
+      "text"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "synthesis",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "02ad33d82c0593e2",
+    "overarching_question": "How does the EFUF method in the 699320ac51ec paper construct datasets for unlearning hallucinations, and how does this approach compare to the FAITHSCORE framework's process for evaluating factual precision in free-form answers as described in d2cdaabd9749?",
+    "gold_answer": "The EFUF method constructs three datasets\u2014positive subsentence, negative subsentence, and complete sentence\u2014by extracting objects from generated captions and calculating their image relevance using CLIP, with thresholds to distinguish positive and negative samples, eliminating the need for manual annotation. In contrast, the FAITHSCORE framework evaluates factual precision by breaking down answers into atomic facts through descriptive sub-sentence identification, atomic fact generation, and fact verification, each handled by a dedicated module (Recognizer, Decomposer, Verifier).",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_83a7142a8d76"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_83a7142a8d76",
+            "source_id": "U_6000364c3110",
+            "paper_id": "699320ac51ec",
+            "statement": "The EFUF method constructs three datasets\u2014positive subsentence, negative subsentence, and complete sentence\u2014by extracting objects from generated captions and calculating their image relevance using CLIP, with thresholds to distinguish positive and negative samples, thus eliminating the need for manual annotation.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact captures the novel methodological approach of EFUF in dataset construction, specifically the automation of positive/negative sample selection using CLIP-based image-text relevance, which is central to the paper's contribution and reduces annotation effort.",
+            "source_mode": "parsed",
+            "source_section": "page_5",
+            "source_text": "Initially, we extract objects from generated captions and calculate their image relevance utilizing CLIP, followed by the construction of three datasets. ... By setting thresholds for the scores, we are able to discern and compile distinct samples from the generated text, forming a dataset for fine-tuning that circumvents the need for labor-intensive manual annotation.",
+            "image_path": null,
+            "metadata": {},
+            "content": "The EFUF method constructs three datasets\u2014positive subsentence, negative subsentence, and complete sentence\u2014by extracting objects from generated captions and calculating their image relevance using CLIP, with thresholds to distinguish positive and negative samples, thus eliminating the need for manual annotation."
+          }
+        ],
+        "sub_question": "How does the EFUF method construct datasets for unlearning hallucinations?",
+        "sub_answer": "By extracting objects from generated captions and calculating their image relevance using CLIP, creating positive and negative samples without manual annotation."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_3b64c57ec3c7",
+          "F_77e971714379"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_3b64c57ec3c7",
+            "source_id": "U_8fbbabbf0b78",
+            "paper_id": "d2cdaabd9749",
+            "statement": "F AITH S CORE enables a more fine-grained and interpretable evaluation of the factual precision of free-form answers by breaking down answers into atomic facts and verifying each fact's faithfulness.",
+            "modality": "figure",
+            "difficulty": "medium",
+            "reasoning": "This fact synthesizes the process and its intended benefit, as illustrated by the stepwise breakdown in the figure.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p1",
+            "source_text": "F AITH - S CORE allows a more fine-grained and interpretable evaluation of the factual precision of free-form answers.",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_002_p1.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "F AITH S CORE enables a more fine-grained and interpretable evaluation of the factual precision of free-form answers by breaking down answers into atomic facts and verifying each fact's faithfulness."
+          },
+          {
+            "fact_id": "F_77e971714379",
+            "source_id": "U_fe912f2d731c",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The F AITH S CORE estimation process consists of three main steps: Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification.",
+            "modality": "text",
+            "difficulty": "easy",
+            "reasoning": "The caption lists the three main steps, providing a clear breakdown of the process depicted in the figure.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p4",
+            "source_text": "which mainly consists of three steps: Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification.",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_014_p4.png",
+            "metadata": {},
+            "content": "The F AITH S CORE estimation process consists of three main steps: Descriptive Sub-sentence Identification, Atomic Fact Generation, and Fact Verification."
+          }
+        ],
+        "sub_question": "What are the main steps of the FAITHSCORE framework for evaluating factual precision?",
+        "sub_answer": "Descriptive sub-sentence identification, atomic fact generation, and fact verification, each handled by a separate module."
+      }
+    ],
+    "paper_ids": [
+      "d2cdaabd9749",
+      "699320ac51ec"
+    ],
+    "modalities": [
+      "text",
+      "figure"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "comparison",
+    "generation_mode": "free"
+  },
+  {
+    "question_id": "bfb0ed1117f65c2d",
+    "overarching_question": "How does the FAITHSCORE metric differ from CHAIR in evaluating the validity of vision-language model outputs, particularly in terms of the granularity and scope of facts considered?",
+    "gold_answer": "FAITHSCORE is a reference-free, fine-grained evaluation metric that measures the faithfulness of free-form answers from LVLMs by extracting and verifying atomic facts from generated responses, enabling interpretable and detailed assessment. In contrast, CHAIR detects an average of only 2.4 objects per answer, substantially fewer than the 11.3 atomic facts identified in human evaluation, indicating that CHAIR's limited object scope reduces its validity for evaluating fine-grained and open-domain hallucinations.",
+    "hops": [
+      {
+        "hop_idx": 0,
+        "fact_ids": [
+          "F_67b4e6cb240c"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_67b4e6cb240c",
+            "source_id": "U_7876077c3e62",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The FAITHSCORE metric is a reference-free, fine-grained evaluation method that measures the faithfulness of free-form answers from large vision-language models (LVLMs) by extracting atomic facts from generated responses and verifying their consistency with the input image.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact captures the novel methodological contribution of the paper: a new metric for evaluating LVLM outputs at a fine-grained, fact-based level, which is central to the paper's core contribution.",
+            "source_mode": "parsed",
+            "source_section": "page_1",
+            "source_text": "We introduce FAITHSCORE (Faithfulness to Atomic Image Facts Score), a reference-free and fine-grained evaluation metric that measures the faithfulness of the generated free-form answers from large vision-language models (LVLMs). The FAITHSCORE evaluation first identifies sub-sentences containing descriptive statements that need to be verified, then extracts a comprehensive list of atomic facts from these sub-sentences, and finally conducts consistency verification between fine-grained atomic facts and the input image.",
+            "image_path": null,
+            "metadata": {},
+            "content": "The FAITHSCORE metric is a reference-free, fine-grained evaluation method that measures the faithfulness of free-form answers from large vision-language models (LVLMs) by extracting atomic facts from generated responses and verifying their consistency with the input image."
+          }
+        ],
+        "sub_question": "What is the FAITHSCORE metric and how does it evaluate vision-language model outputs?",
+        "sub_answer": "FAITHSCORE is a reference-free, fine-grained evaluation method that measures the faithfulness of free-form answers from LVLMs by extracting atomic facts from generated responses and verifying their consistency with the input image."
+      },
+      {
+        "hop_idx": 1,
+        "fact_ids": [
+          "F_63569b302631"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_63569b302631",
+            "source_id": "U_3a70327a6198",
+            "paper_id": "d2cdaabd9749",
+            "statement": "The average number of objects detected by CHAIR per answer is 2.4, which is substantially lower than the average number of atomic facts (11.3) identified in human evaluation, indicating that CHAIR's limited object scope reduces its validity for evaluating fine-grained and open-domain hallucinations.",
+            "modality": "text",
+            "difficulty": "medium",
+            "reasoning": "This fact highlights a key methodological limitation of CHAIR, explaining why it correlates less well with human judgment and supporting the need for more comprehensive metrics like FAITHSCORE.",
+            "source_mode": "parsed",
+            "source_section": "page_13",
+            "source_text": "To justify our viewpoint, we compute the average number of objects with CHAIR for each an- swer and the result is 2.4, which is far less than the average number of atomic facts ( i.e.,  11.3) found in our human evaluation.",
+            "image_path": null,
+            "metadata": {},
+            "content": "The average number of objects detected by CHAIR per answer is 2.4, which is substantially lower than the average number of atomic facts (11.3) identified in human evaluation, indicating that CHAIR's limited object scope reduces its validity for evaluating fine-grained and open-domain hallucinations."
+          }
+        ],
+        "sub_question": "What is the average number of objects detected by CHAIR per answer, and how does this compare to human evaluation?",
+        "sub_answer": "CHAIR detects an average of 2.4 objects per answer, which is much lower than the 11.3 atomic facts identified in human evaluation."
+      },
+      {
+        "hop_idx": 2,
+        "fact_ids": [
+          "F_3b64c57ec3c7"
+        ],
+        "facts": [
+          {
+            "fact_id": "F_3b64c57ec3c7",
+            "source_id": "U_8fbbabbf0b78",
+            "paper_id": "d2cdaabd9749",
+            "statement": "F AITH S CORE enables a more fine-grained and interpretable evaluation of the factual precision of free-form answers by breaking down answers into atomic facts and verifying each fact's faithfulness.",
+            "modality": "figure",
+            "difficulty": "medium",
+            "reasoning": "This fact synthesizes the process and its intended benefit, as illustrated by the stepwise breakdown in the figure.",
+            "source_mode": "parsed",
+            "source_section": "Figure_p1",
+            "source_text": "F AITH - S CORE allows a more fine-grained and interpretable evaluation of the factual precision of free-form answers.",
+            "image_path": "outputs/parsed/d2cdaabd9749/figures/fig_002_p1.png",
+            "metadata": {
+              "visual_fact_mode": "image_caption"
+            },
+            "content": "F AITH S CORE enables a more fine-grained and interpretable evaluation of the factual precision of free-form answers by breaking down answers into atomic facts and verifying each fact's faithfulness."
+          }
+        ],
+        "sub_question": "How does FAITHSCORE enable interpretable evaluation of factual precision?",
+        "sub_answer": "FAITHSCORE enables a more fine-grained and interpretable evaluation of the factual precision of free-form answers by breaking down answers into atomic facts and verifying each fact's faithfulness."
+      }
+    ],
+    "paper_ids": [
+      "d2cdaabd9749"
+    ],
+    "modalities": [
+      "text",
+      "figure"
+    ],
+    "difficulty": "medium",
+    "reasoning_type": "comparison",
+    "generation_mode": "free"
+  }
+]
