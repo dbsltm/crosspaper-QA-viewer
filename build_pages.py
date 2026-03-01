@@ -20,27 +20,54 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 TEMPLATE = ROOT / "viewer_tempalte.html"
 QA_DIR = ROOT / "image_caption"
+QA_OUTPUTS_DIR = ROOT.parent / "outputs" / "qa" / "image_caption"
 EVAL_DIR = ROOT.parent / "outputs" / "eval" / "image_caption"
 OUTPUT = ROOT / "index.html"
 
 
 def load_questions():
-    path = QA_DIR / "multihop_questions_entangled_max2facts.json"
-    if not path.exists():
-        raise FileNotFoundError(f"Questions file not found: {path}")
-    return json.loads(path.read_text())
+    candidates = [
+        QA_DIR / "multihop_questions_entangled_max2facts.json",
+        QA_DIR / "multihop_questions_entangled.json",
+        QA_OUTPUTS_DIR / "multihop_questions_entangled.json",
+    ]
+    for path in candidates:
+        if path.exists():
+            print(f"  Using questions from: {path}")
+            return json.loads(path.read_text())
+    raise FileNotFoundError(f"No questions file found. Tried: {[str(c) for c in candidates]}")
 
 
 def load_eval():
-    """Try to load evaluation results to merge into questions."""
-    for pattern in ["full_evaluation_gpt*.json", "full_evaluation.json"]:
-        for p in sorted(EVAL_DIR.glob(pattern)):
-            data = json.loads(p.read_text())
-            qs = data.get("questions", [])
-            if qs:
-                print(f"  Loaded eval from: {p.name} ({len(qs)} questions)")
-                return {q["question_id"]: q for q in qs}
-    return {}
+    """Load evaluation results: per-question evals take priority, then full_evaluation."""
+    eval_map = {}
+    # Per-question evals (eval_<model>_<qid>.json)
+    if EVAL_DIR.exists():
+        for p in sorted(EVAL_DIR.glob("eval_*.json")):
+            try:
+                data = json.loads(p.read_text())
+                if isinstance(data, dict) and "question_id" in data:
+                    eval_map[data["question_id"]] = data
+            except Exception:
+                continue
+        if eval_map:
+            print(f"  Loaded {len(eval_map)} per-question evals")
+
+    # Fallback to full_evaluation files
+    if not eval_map:
+        for pattern in ["full_evaluation_gpt*.json", "full_evaluation*.json"]:
+            for p in sorted(EVAL_DIR.glob(pattern)):
+                data = json.loads(p.read_text())
+                qs = data.get("questions", [])
+                if qs:
+                    print(f"  Loaded eval from: {p.name} ({len(qs)} questions)")
+                    for q in qs:
+                        eval_map[q["question_id"]] = q
+                    break
+            if eval_map:
+                break
+
+    return eval_map
 
 
 def merge(questions, eval_map):
@@ -56,12 +83,12 @@ def merge(questions, eval_map):
             "gold_answer": q.get("gold_answer", ""),
             "hops": [],
             "eval": {
-                "difficulty": q.get("difficulty", ""),
-                "reasoning_type": q.get("reasoning_type", ""),
-                "generation_mode": q.get("generation_mode", ""),
-                "entanglement_type": q.get("entanglement_type", ""),
-                "paper_ids": q.get("paper_ids", []),
-                "modalities": q.get("modalities", []),
+                "difficulty": q.get("difficulty", "") or ev.get("difficulty", ""),
+                "reasoning_type": q.get("reasoning_type", "") or ev.get("reasoning_type", ""),
+                "generation_mode": q.get("generation_mode", "") or ev.get("generation_mode", ""),
+                "entanglement_type": q.get("entanglement_type", "") or ev.get("entanglement_type", ""),
+                "paper_ids": q.get("paper_ids", []) or ev.get("paper_ids", []),
+                "modalities": q.get("modalities", []) or ev.get("modalities", []),
             },
         }
 
@@ -86,6 +113,7 @@ def merge(questions, eval_map):
                     "content": f.get("statement", f.get("content", "")),
                     "difficulty": f.get("difficulty", ""),
                     "source_section": f.get("source_section", ""),
+                    "image_path": f.get("image_path"),
                 } for f in hop.get("facts", [])],
             })
 

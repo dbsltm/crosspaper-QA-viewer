@@ -12,8 +12,11 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-FACTS_DIR = ROOT / "facts" / "image_caption"
-QA_DIR = ROOT / "image_caption"
+OUTPUTS = ROOT.parent / "outputs"
+FACTS_DIR = OUTPUTS / "facts" / "image_caption"
+QA_DIR = OUTPUTS / "qa" / "image_caption"
+EVAL_DIR = OUTPUTS / "eval" / "image_caption"
+PARSE_DIR = OUTPUTS / "parsed"
 
 
 def _load_json(path: Path):
@@ -35,33 +38,64 @@ def _get_all_data() -> dict:
 
     questions = {}
     if QA_DIR.exists():
-        for qf in sorted(QA_DIR.glob("*max2facts*.json")):
+        for qf in sorted(QA_DIR.glob("multihop_questions_*.json")):
             tag = qf.stem
             data = _load_json(qf)
             if isinstance(data, list) and data:
                 questions[tag] = data
 
-    # eval_data = {}
-    # if EVAL_DIR.exists():
-    #     for ef in sorted(EVAL_DIR.glob("full_evaluation*.json")):
-    #         data = _load_json(ef)
-    #         if data:
-    #             eval_data[ef.stem] = data
+    # Load full_evaluation files
+    eval_data = {}
+    if EVAL_DIR.exists():
+        for ef in sorted(EVAL_DIR.glob("full_evaluation*.json")):
+            data = _load_json(ef)
+            if data:
+                eval_data[ef.stem] = data
+
+    # Load per-question eval files (eval_<model>_<qid>.json)
+    per_question_evals = {}
+    if EVAL_DIR.exists():
+        for ef in sorted(EVAL_DIR.glob("eval_*.json")):
+            data = _load_json(ef)
+            if isinstance(data, dict) and "question_id" in data:
+                per_question_evals[data["question_id"]] = data
 
     papers = {}
-    for pf in sorted(FACTS_DIR.glob("*_parsed.json")):
-        data = _load_json(pf)
-        if isinstance(data, dict):
-            pid = data.get("paper_id", pf.stem.replace("_parsed", ""))
-            figs = data.get("figures", [])
-            papers[pid] = {
-                "paper_id": pid,
-                "title": data.get("title", "Unknown"),
-                "n_sections": len(data.get("sections", [])),
-                "n_figures": len([f for f in figs if f.get("figure_type") == "figure"]),
-                "n_tables": len([f for f in figs if f.get("figure_type") == "table"]),
-                "n_equations": len(data.get("equations", [])),
-            }
+    for pd in sorted(PARSE_DIR.iterdir()) if PARSE_DIR.exists() else []:
+        if not pd.is_dir():
+            continue
+        meta = pd / "layout_extract.json"
+        if not meta.exists():
+            meta = pd / "grobid_extract.json"
+        if meta.exists():
+            data = _load_json(meta)
+            if isinstance(data, dict):
+                pid = pd.name
+                figs = data.get("figures", [])
+                papers[pid] = {
+                    "paper_id": pid,
+                    "title": data.get("title", "Unknown"),
+                    "n_sections": len(data.get("sections", [])),
+                    "n_figures": len([f for f in figs
+                                      if f.get("figure_type") != "table"]),
+                    "n_tables": len([f for f in figs
+                                     if f.get("figure_type") == "table"]),
+                    "n_equations": len(data.get("equations", [])),
+                }
+    if not papers:
+        for pf in sorted(FACTS_DIR.glob("*_parsed.json")):
+            data = _load_json(pf)
+            if isinstance(data, dict):
+                pid = data.get("paper_id", pf.stem.replace("_parsed", ""))
+                figs = data.get("figures", [])
+                papers[pid] = {
+                    "paper_id": pid,
+                    "title": data.get("title", "Unknown"),
+                    "n_sections": len(data.get("sections", [])),
+                    "n_figures": len([f for f in figs if f.get("figure_type") == "figure"]),
+                    "n_tables": len([f for f in figs if f.get("figure_type") == "table"]),
+                    "n_equations": len(data.get("equations", [])),
+                }
 
     return {
         "all_facts": all_facts,
@@ -69,7 +103,8 @@ def _get_all_data() -> dict:
         "filtered_ids": list(filtered_ids),
         "filter_log": filter_log_map,
         "questions": questions,
-        "eval": {},
+        "eval": eval_data,
+        "per_question_evals": per_question_evals,
         "papers": papers,
     }
 
@@ -94,7 +129,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
             self._send(404, "text/plain", b"Not found")
 
     def _serve_image(self, img_path: str):
-        full = ROOT / img_path if not os.path.isabs(img_path) else Path(img_path)
+        full = OUTPUTS.parent / img_path if not os.path.isabs(img_path) else Path(img_path)
         if not full.is_file():
             self._send(404, "text/plain", b"Image not found")
             return
@@ -122,7 +157,9 @@ def main():
     srv = HTTPServer((args.host, args.port), ViewerHandler)
     print(f"\n  Pipeline Viewer running at http://localhost:{args.port}")
     print(f"  Facts dir:     {FACTS_DIR}")
-    print(f"  Questions dir: {QA_DIR}\n")
+    print(f"  Questions dir: {QA_DIR}")
+    print(f"  Eval dir:      {EVAL_DIR}")
+    print(f"  Parse dir:     {PARSE_DIR}\n")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

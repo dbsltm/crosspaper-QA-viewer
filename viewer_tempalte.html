@@ -45,7 +45,10 @@ h1{text-align:center;margin-bottom:8px;font-size:1.6em}
 .mod-table{background:#fd79a8;color:#fff}
 .mod-equation{background:#fdcb6e;color:#2d3436}
 .fact-content{line-height:1.45}
+.fact-img{max-width:200px;max-height:140px;border-radius:4px;margin-top:6px;cursor:pointer;border:1px solid #ddd;display:block}
 .fact-source{font-size:.78em;color:#999;margin-top:4px}
+.img-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:1000;cursor:pointer}
+.img-modal img{max-width:90%;max-height:90%;border-radius:8px}
 .eval-section{margin-top:12px}
 .eval-section h4{font-size:.9em;margin-bottom:8px;color:#2d3436}
 .eval-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
@@ -145,6 +148,7 @@ function renderQuestions(){
         var ap=CONDS.map(function(cc){return pill(cc,(ae[cc]||{}).judge_score)}).join("");
         hh+='<div class="fact"><div class="fact-header"><span><span class="fact-mod '+mc+'">'+esc(fact.modality)+'</span> <span class="fact-id">'+esc(fact.fact_id)+'</span></span><span style="font-size:.78em;color:#999">'+esc((fact.paper_id||"").substring(0,8))+'&hellip; &middot; '+esc(fact.source_section||"")+'</span></div>';
         hh+='<div class="fact-content">'+esc(fact.content||fact.statement||"")+'</div>';
+        if(fact.image_path)hh+='<img class="fact-img" src="/image?path='+encodeURIComponent(fact.image_path)+'" loading="lazy" onclick="showImgModal(this.src)">';
         if(ae.query)hh+='<div class="fact-source" style="margin-top:6px"><b>Auto QA:</b> '+esc(ae.query)+'</div>';
         if(ae.gold_answer)hh+='<div class="fact-source"><b>Gold:</b> '+esc(ae.gold_answer)+'</div>';
         hh+='<div style="display:flex;gap:4px;margin-top:4px">'+ap+'</div></div>';
@@ -159,6 +163,7 @@ function renderQuestions(){
 
 function toggleQ(i){document.getElementById("body"+i).classList.toggle("open");document.getElementById("chev"+i).classList.toggle("open")}
 function toggleDetail(id){document.getElementById(id).classList.toggle("open")}
+function showImgModal(src){var m=document.createElement("div");m.className="img-modal";m.innerHTML='<img src="'+src+'">';m.onclick=function(){m.remove()};document.body.appendChild(m)}
 
 renderSummary();populateFilters();renderQuestions();
 document.getElementById("filterDiff").addEventListener("change",renderQuestions);

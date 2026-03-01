@@ -97,11 +97,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .eval-table th { background:var(--surface2); color:var(--text-dim); font-weight:500; }
 .eval-table td { background:var(--surface); }
 
-.image-preview { max-width:400px; max-height:200px; border-radius:6px; margin-top:8px; cursor:pointer; }
+.image-preview { max-width:400px; max-height:200px; border-radius:6px; margin-top:8px; cursor:pointer;
+  border:1px solid var(--border); }
+.image-thumb { max-width:160px; max-height:100px; border-radius:4px; margin-top:4px; cursor:pointer;
+  border:1px solid var(--border); display:block; }
 .image-modal { position:fixed; top:0; left:0; width:100%; height:100%;
   background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center;
   z-index:1000; cursor:pointer; }
 .image-modal img { max-width:90%; max-height:90%; border-radius:8px; }
+.hop-fact-img { max-width:120px; max-height:80px; border-radius:4px; margin-top:4px; cursor:pointer;
+  border:1px solid var(--border); display:block; }
+.modality-icon { display:inline-flex; align-items:center; gap:4px; }
+.modality-icon svg { width:14px; height:14px; }
 
 .pagination { display:flex; gap:8px; align-items:center; margin-top:16px; justify-content:center; }
 .pagination button { background:var(--surface); border:1px solid var(--border); color:var(--text);
@@ -252,7 +259,17 @@ function renderOverview() {
     +'</div>'
     +'<h3 style="margin-bottom:12px">Questions by Mode</h3><div class="stats-grid">'
     +Object.entries(mQ).map(([m,c])=>'<div class="stat-card"><div class="stat-value">'+c+'</div><div class="stat-label">'+m+'</div></div>').join('')
-    +'</div>';
+    +'</div>'
+    +(function(){
+      var pqe = DATA.per_question_evals || {};
+      var nPQ = Object.keys(pqe).length;
+      if (!nPQ) return '';
+      var models = [...new Set(Object.values(pqe).map(function(e){return e.evaluator_model||'?'}))];
+      return '<h3 style="margin-bottom:12px">Per-Question Evals</h3><div class="stats-grid">'
+        +'<div class="stat-card"><div class="stat-value">'+nPQ+'</div><div class="stat-label">Evaluated Questions</div></div>'
+        +'<div class="stat-card"><div class="stat-value" style="font-size:16px">'+esc(models.join(', '))+'</div><div class="stat-label">Models</div></div>'
+        +'</div>';
+    })();
 }
 
 function renderFacts(facts, title) {
@@ -262,7 +279,7 @@ function renderFacts(facts, title) {
   let filtered = facts;
   if (currentFilters.search) {
     const q = currentFilters.search.toLowerCase();
-    filtered = filtered.filter(f => f.statement.toLowerCase().includes(q)
+    filtered = filtered.filter(f => (f.statement||f.content||'').toLowerCase().includes(q)
       || f.fact_id.toLowerCase().includes(q)
       || (f.source_section||'').toLowerCase().includes(q));
   }
@@ -282,10 +299,13 @@ function renderFacts(facts, title) {
       ? '<img class="image-preview" src="/image?path='+encodeURIComponent(f.image_path)+'" loading="lazy" onclick="event.stopPropagation();showImg(this.src)">'
       : '';
     const fl = DATA.filter_log[f.fact_id];
-    const fn = fl ? '<div style="font-size:11px;color:var(--text-dim);margin-top:4px">Filter score: '+(fl.score||0).toFixed(3)+'</div>' : '';
+    const score = fl ? (fl.judge_score != null ? fl.judge_score : fl.score) : null;
+    const fn = fl ? '<div style="font-size:11px;color:var(--text-dim);margin-top:4px">Filter: '
+      +(fl.filtered_out ? '<span style="color:var(--red)">removed</span>' : '<span style="color:var(--green)">kept</span>')
+      +' (score: '+(score != null ? score.toFixed(2) : 'N/A')+')</div>' : '';
     return '<div class="card" onclick="showFact(\''+f.fact_id+'\')">'
       +'<div class="card-header"><span class="id">'+f.fact_id+'</span><span class="id">#'+(start+i+1)+' / '+total+'</span></div>'
-      +'<div class="card-body"><div class="statement">'+esc(f.statement)+'</div>'
+      +'<div class="card-body"><div class="statement">'+esc(f.statement || f.content)+'</div>'
       +(f.source_text ? '<div class="source-quote">'+esc(f.source_text.substring(0,300))+'</div>' : '')
       +(f.reasoning ? '<div class="reasoning">'+esc(f.reasoning)+'</div>' : '')
       +img+fn+'</div>'
@@ -318,40 +338,63 @@ function renderQuestions() {
     const q = currentFilters.search.toLowerCase();
     filtered = filtered.filter(x => x.overarching_question.toLowerCase().includes(q) || x.gold_answer.toLowerCase().includes(q));
   }
-  if (currentFilters.difficulty) filtered = filtered.filter(x => x.difficulty === currentFilters.difficulty);
-  if (currentFilters.reasoning) filtered = filtered.filter(x => x.reasoning_type === currentFilters.reasoning);
+  if (currentFilters.difficulty) filtered = filtered.filter(x => (x.difficulty || (DATA.per_question_evals||{})[x.question_id]?.difficulty) === currentFilters.difficulty);
+  if (currentFilters.reasoning) filtered = filtered.filter(x => (x.reasoning_type || (DATA.per_question_evals||{})[x.question_id]?.reasoning_type) === currentFilters.reasoning);
   const total = filtered.length;
   const start = currentPage * PAGE_SIZE;
   const page = filtered.slice(start, start + PAGE_SIZE);
   const nPages = Math.ceil(total / PAGE_SIZE);
-  const rts = [...new Set(qs.map(q=>q.reasoning_type))];
+  const rts = [...new Set(qs.map(q=>q.reasoning_type || ((DATA.per_question_evals||{})[q.question_id]||{}).reasoning_type).filter(Boolean))];
   const label = mode.replace('multihop_questions_','');
 
   let cards = page.map((q, i) => {
-    const hops = q.hops.map(h => {
-      const ff = h.facts.map(f => {
+    const ev = (DATA.per_question_evals || {})[q.question_id] || {};
+    const hops = (q.hops || []).map(h => {
+      const ff = (h.facts || []).map(f => {
         const col = {text:'#60a5fa',figure:'#c084fc',table:'#4ade80',equation:'#fbbf24'}[f.modality]||'#9ca3af';
+        const stmt = f.statement || f.content || '';
+        const factImg = f.image_path
+          ? '<img class="hop-fact-img" src="/image?path='+encodeURIComponent(f.image_path)+'" loading="lazy" onclick="event.stopPropagation();showImg(this.src)">'
+          : '';
         return '<div class="hop-fact"><span class="mod-dot" style="background:'+col+'"></span>'
-          +'<span>['+f.paper_id.substring(0,8)+'/'+f.modality+'] '+esc(f.statement.substring(0,150))+'</span></div>';
+          +'<div><span>['+f.paper_id.substring(0,8)+'/'+f.modality+'] '+esc(stmt.substring(0,200))+'</span>'
+          +factImg+'</div></div>';
       }).join('');
       const dep = h.depends_on_hops && h.depends_on_hops.length ? ' &rarr; depends on '+h.depends_on_hops.join(',') : '';
       const rt = h.hop_reasoning_type ? ' ['+h.hop_reasoning_type+']' : '';
-      return '<div class="hop"><div class="hop-header"><strong>Hop '+h.hop_idx+'</strong><span>'+h.facts.length+' fact(s)'+rt+dep+'</span></div>'
+      return '<div class="hop"><div class="hop-header"><strong>Hop '+h.hop_idx+'</strong><span>'+
+        (h.facts||[]).length+' fact(s)'+rt+dep+'</span></div>'
         +(h.sub_question ? '<div class="sub-q"><b>Q:</b> '+esc(h.sub_question)+'</div>' : '')
         +(h.sub_answer ? '<div class="sub-a"><b>A:</b> '+esc(h.sub_answer)+'</div>' : '')
         +'<div class="hop-facts">'+ff+'</div></div>';
     }).join('');
     const adv = q.adversarial_score != null ? '<span class="tag" style="background:var(--surface2);color:var(--orange)">adv='+q.adversarial_score.toFixed(2)+'</span>' : '';
-    const et = q.entanglement_type ? '<span class="tag" style="background:var(--surface2);color:var(--cyan)">'+q.entanglement_type+'</span>' : '';
+    const et = (q.entanglement_type || ev.entanglement_type) ? '<span class="tag" style="background:var(--surface2);color:var(--cyan)">'+(q.entanglement_type||ev.entanglement_type)+'</span>' : '';
+    const diff = q.difficulty || ev.difficulty || '';
+    const rt = q.reasoning_type || ev.reasoning_type || '';
+    const pids = q.paper_ids || ev.paper_ids || [];
+    const mods = q.modalities || ev.modalities || [];
+    let evalPills = '';
+    if (ev.overarching) {
+      const conds = ['all_papers','only_sections','atomic_facts','parametric'];
+      const condLabels = {all_papers:'AP',only_sections:'Sec',atomic_facts:'AF',parametric:'Prm'};
+      evalPills = '<div style="display:flex;gap:4px;margin-top:6px">'
+        +conds.map(c => {
+          const s = (ev.overarching[c]||{}).judge_score;
+          const color = s==null?'#666':s>=0.8?'var(--green)':s>=0.5?'var(--yellow)':'var(--red)';
+          return '<span class="tag" style="background:var(--surface2);color:'+color+'">'+condLabels[c]+': '+(s!=null?s.toFixed(2):'?')+'</span>';
+        }).join('')+'</div>';
+    }
     return '<div class="question-card"><div class="q-header">'
       +'<div style="display:flex;justify-content:space-between;margin-bottom:8px">'
       +'<span style="font-size:11px;color:var(--text-dim)">'+q.question_id+' &middot; #'+(start+i+1)+'</span>'
-      +'<div style="display:flex;gap:6px"><span class="tag tag-'+q.difficulty+'">'+q.difficulty+'</span>'
-      +'<span class="tag tag-mode">'+q.reasoning_type+'</span>'+adv+et+'</div></div>'
+      +'<div style="display:flex;gap:6px">'+(diff?'<span class="tag tag-'+diff+'">'+diff+'</span>':'')
+      +(rt?'<span class="tag tag-mode">'+rt+'</span>':'')+adv+et+'</div></div>'
       +'<div class="q-text">'+esc(q.overarching_question)+'</div>'
+      +evalPills
       +'<div style="display:flex;gap:6px;margin-top:8px">'
-      +q.paper_ids.map(p=>'<span class="tag tag-paper">'+p.substring(0,10)+'</span>').join('')
-      +q.modalities.map(m=>'<span class="tag tag-'+m+'">'+m+'</span>').join('')
+      +pids.map(p=>'<span class="tag tag-paper">'+p.substring(0,10)+'</span>').join('')
+      +mods.map(m=>'<span class="tag tag-'+m+'">'+m+'</span>').join('')
       +'</div></div>'
       +'<div class="q-answer"><strong>Gold: </strong>'+esc(q.gold_answer)+'</div>'
       +'<div class="q-hops">'+hops+'</div></div>';
@@ -369,43 +412,59 @@ function renderQuestions() {
 }
 
 function renderEval() {
-  if (!Object.keys(DATA.eval).length) return '<h2>Evaluation</h2><p style="color:var(--text-dim)">No evaluation data.</p>';
+  const hasFullEval = Object.keys(DATA.eval).length > 0;
+  const hasPerQ = Object.keys(DATA.per_question_evals || {}).length > 0;
+  if (!hasFullEval && !hasPerQ) return '<h2>Evaluation</h2><p style="color:var(--text-dim)">No evaluation data.</p>';
   let html = '<h2>Evaluation Results</h2>';
+  const conds = ['all_papers','only_sections','atomic_facts','parametric'];
+  const condLabels = {all_papers:'All Papers',only_sections:'Sections Only',atomic_facts:'Atomic Facts',parametric:'Parametric'};
+
   for (const [name, data] of Object.entries(DATA.eval)) {
     const s = data.summary || {};
     const levels = ['overarching','hop_by_hop','atomic_fact'];
-    const conds = ['all_papers','only_sections','atomic_facts','parametric'];
     html += '<h3 style="margin:16px 0 8px">'+esc(name)+'</h3>';
+    if (data.model) html += '<div style="font-size:12px;color:var(--text-dim);margin-bottom:8px">Model: '+esc(data.model)
+      +(data.judge_model?' &middot; Judge: '+esc(data.judge_model):'')
+      +(data.questions?' &middot; '+data.questions.length+' questions':'')+'</div>';
     html += '<table class="eval-table"><thead><tr><th>Level</th>';
-    conds.forEach(c => html += '<th>'+c.replace(/_/g,' ')+'</th>');
+    conds.forEach(c => html += '<th>'+condLabels[c]+'</th>');
     html += '</tr></thead><tbody>';
     levels.forEach(lv => {
       html += '<tr><td style="text-align:left;font-weight:500">'+lv.replace(/_/g,' ')+'</td>';
       conds.forEach(cd => {
         const e = s[lv+'_'+cd] || {};
         const v = e.mean != null ? e.mean.toFixed(3) : '-';
-        html += '<td>'+v+' <span style="color:var(--text-dim);font-size:10px">(n='+(e.n||0)+')</span></td>';
+        const color = e.mean != null ? (e.mean>=0.8?'var(--green)':e.mean>=0.5?'var(--yellow)':'var(--red)') : 'var(--text)';
+        html += '<td><span style="color:'+color+'">'+v+'</span> <span style="color:var(--text-dim);font-size:10px">(n='+(e.n||0)+')</span></td>';
       });
       html += '</tr>';
     });
     html += '</tbody></table>';
-    if (data.results) {
-      for (const [mn, md] of Object.entries(data.results)) {
-        const ms = md.summary || {};
-        html += '<h4 style="margin:12px 0 6px">Model: '+esc(mn)+'</h4><table class="eval-table"><thead><tr><th>Level</th>';
-        conds.forEach(c => html += '<th>'+c.replace(/_/g,' ')+'</th>');
-        html += '</tr></thead><tbody>';
-        levels.forEach(lv => {
-          html += '<tr><td style="text-align:left">'+lv.replace(/_/g,' ')+'</td>';
-          conds.forEach(cd => {
-            const e = ms[lv+'_'+cd] || {};
-            html += '<td>'+(e.mean!=null?e.mean.toFixed(3):'-')+'</td>';
-          });
-          html += '</tr>';
-        });
-        html += '</tbody></table>';
-      }
-    }
+  }
+
+  if (hasPerQ) {
+    const pqe = DATA.per_question_evals;
+    const models = [...new Set(Object.values(pqe).map(e => e.evaluator_model||'unknown'))];
+    html += '<h3 style="margin:16px 0 8px">Per-Question Evaluations ('+Object.keys(pqe).length+' questions)</h3>';
+    models.forEach(model => {
+      const qs = Object.values(pqe).filter(e => (e.evaluator_model||'unknown')===model);
+      const avgScores = {};
+      conds.forEach(c => {
+        const scores = qs.map(q => (q.overarching||{})[c]).filter(e => e && e.judge_score!=null).map(e => e.judge_score);
+        avgScores[c] = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length) : null;
+      });
+      html += '<div style="font-size:12px;color:var(--text-dim);margin:8px 0 4px">Model: '+esc(model)+' ('+qs.length+' questions)</div>';
+      html += '<table class="eval-table"><thead><tr><th>Condition</th><th>Avg Score</th><th>n</th></tr></thead><tbody>';
+      conds.forEach(c => {
+        const scores = qs.map(q => (q.overarching||{})[c]).filter(e => e && e.judge_score!=null);
+        const avg = avgScores[c];
+        const color = avg!=null?(avg>=0.8?'var(--green)':avg>=0.5?'var(--yellow)':'var(--red)'):'var(--text)';
+        html += '<tr><td style="text-align:left">'+condLabels[c]+'</td>'
+          +'<td><span style="color:'+color+'">'+(avg!=null?avg.toFixed(3):'-')+'</span></td>'
+          +'<td>'+scores.length+'</td></tr>';
+      });
+      html += '</tbody></table>';
+    });
   }
   return html;
 }
@@ -432,21 +491,31 @@ function showFact(fid) {
   if (!f) return;
   const kept = DATA.filtered_ids.includes(f.fact_id);
   const fl = DATA.filter_log[f.fact_id];
-  const img = f.image_path ? '<img style="max-width:100%;border-radius:6px" src="/image?path='+encodeURIComponent(f.image_path)+'">' : 'None';
+  const score = fl ? (fl.judge_score != null ? fl.judge_score : fl.score) : null;
+  const img = f.image_path
+    ? '<img style="max-width:100%;border-radius:6px;cursor:pointer;border:1px solid var(--border)" src="/image?path='
+      +encodeURIComponent(f.image_path)+'" onclick="showImg(this.src)">'
+    : '<span style="color:var(--text-dim)">None</span>';
+  let filterHtml = kept ? '<span class="tag tag-filtered">Kept</span>' : '<span class="tag tag-removed">Removed</span>';
+  if (fl) {
+    filterHtml += '<div style="font-size:11px;margin-top:4px">Score: '+(score != null ? score.toFixed(3) : 'N/A')+'</div>';
+    if (fl.query) filterHtml += '<div style="font-size:11px;margin-top:2px;color:var(--text-dim)">Q: '+esc(fl.query)+'</div>';
+    if (fl.candidate_answer) filterHtml += '<div style="font-size:11px;color:var(--text-dim)">Model: '+esc(fl.candidate_answer)+'</div>';
+    if (fl.gold_answer) filterHtml += '<div style="font-size:11px;color:var(--text-dim)">Gold: '+esc(fl.gold_answer)+'</div>';
+  }
   document.getElementById('detail-content').innerHTML =
     '<h3>Fact Detail</h3>'
     +field('Fact ID','<code>'+f.fact_id+'</code>')
-    +field('Statement',esc(f.statement))
+    +field('Statement',esc(f.statement || f.content))
     +field('Paper',f.paper_id)
     +field('Modality','<span class="tag tag-'+f.modality+'">'+f.modality+'</span>')
     +field('Difficulty','<span class="tag tag-'+f.difficulty+'">'+f.difficulty+'</span>')
     +field('Section',f.source_section||'N/A')
     +field('Source Quote','<div style="font-size:12px;color:var(--text-dim)">'+esc(f.source_text||'N/A')+'</div>')
     +field('Reasoning','<div style="font-size:12px;font-style:italic">'+esc(f.reasoning||'N/A')+'</div>')
-    +field('Filter',(kept?'<span class="tag tag-filtered">Kept</span>':'<span class="tag tag-removed">Removed</span>')
-      +(fl ? '<div style="font-size:11px;margin-top:4px">Score: '+(fl.score||0).toFixed(3)+'</div>' : ''))
+    +field('Filter',filterHtml)
     +field('Image',img)
-    +field('Source Mode',f.source_mode);
+    +field('Source Mode',f.source_mode||'N/A');
   document.getElementById('detail-panel').classList.add('open');
 }
 
