@@ -27,7 +27,7 @@ OUTPUT = ROOT / "index.html"
 
 def load_questions():
     candidates = [
-        QA_DIR / "multihop_questions_entangled_max2facts.json",
+        # QA_DIR / "multihop_questions_entangled_max2facts.json",
         QA_DIR / "multihop_questions_entangled.json",
         QA_OUTPUTS_DIR / "multihop_questions_entangled.json",
     ]
